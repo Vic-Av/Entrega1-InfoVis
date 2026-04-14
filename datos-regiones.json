@@ -1,0 +1,138 @@
+[
+  {
+    "region": "Región de Antofagasta",
+    "Mín. de codregion": "2",
+    "Cuenta de Magnitudes": "515",
+    "Promedio de Magnitudes": "4.650291262",
+    "Mín. de Magnitudes": "2.8",
+    "Máx. de Magnitudes": "7.4"
+  },
+  {
+    "region": "Región de Arica y Parinacota",
+    "Mín. de codregion": "15",
+    "Cuenta de Magnitudes": "139",
+    "Promedio de Magnitudes": "4.665467626",
+    "Mín. de Magnitudes": "3",
+    "Máx. de Magnitudes": "7.1"
+  },
+  {
+    "region": "Región de Atacama",
+    "Mín. de codregion": "3",
+    "Cuenta de Magnitudes": "381",
+    "Promedio de Magnitudes": "4.362204724",
+    "Mín. de Magnitudes": "2.6",
+    "Máx. de Magnitudes": "7"
+  },
+  {
+    "region": "Región de Aysén del Gral.Ibañez del Campo",
+    "Mín. de codregion": "11",
+    "Cuenta de Magnitudes": "2",
+    "Promedio de Magnitudes": "5.05",
+    "Mín. de Magnitudes": "5",
+    "Máx. de Magnitudes": "5.1"
+  },
+  {
+    "region": "Región de Coquimbo",
+    "Mín. de codregion": "4",
+    "Cuenta de Magnitudes": "1233",
+    "Promedio de Magnitudes": "4.377047851",
+    "Mín. de Magnitudes": "2.9",
+    "Máx. de Magnitudes": "8.4"
+  },
+  {
+    "region": "Región de La Araucanía",
+    "Mín. de codregion": "9",
+    "Cuenta de Magnitudes": "17",
+    "Promedio de Magnitudes": "4.641176471",
+    "Mín. de Magnitudes": "3.8",
+    "Máx. de Magnitudes": "6.4"
+  },
+  {
+    "region": "Región de Los Lagos",
+    "Mín. de codregion": "10",
+    "Cuenta de Magnitudes": "42",
+    "Promedio de Magnitudes": "4.39047619",
+    "Mín. de Magnitudes": "3.1",
+    "Máx. de Magnitudes": "7.6"
+  },
+  {
+    "region": "Región de Los Ríos",
+    "Mín. de codregion": "14",
+    "Cuenta de Magnitudes": "33",
+    "Promedio de Magnitudes": "4.054545455",
+    "Mín. de Magnitudes": "2.8",
+    "Máx. de Magnitudes": "6.2"
+  },
+  {
+    "region": "Región de Magallanes y Antártica Chilena",
+    "Mín. de codregion": "12",
+    "Cuenta de Magnitudes": "8",
+    "Promedio de Magnitudes": "5.075",
+    "Mín. de Magnitudes": "3.8",
+    "Máx. de Magnitudes": "7.5"
+  },
+  {
+    "region": "Región de Ñuble",
+    "Mín. de codregion": "16",
+    "Cuenta de Magnitudes": "24",
+    "Promedio de Magnitudes": "4.383333333",
+    "Mín. de Magnitudes": "2.8",
+    "Máx. de Magnitudes": "5.6"
+  },
+  {
+    "region": "Región de Tarapacá",
+    "Mín. de codregion": "1",
+    "Cuenta de Magnitudes": "836",
+    "Promedio de Magnitudes": "4.454665072",
+    "Mín. de Magnitudes": "2.8",
+    "Máx. de Magnitudes": "8.2"
+  },
+  {
+    "region": "Región de Valparaíso",
+    "Mín. de codregion": "5",
+    "Cuenta de Magnitudes": "388",
+    "Promedio de Magnitudes": "4.221134021",
+    "Mín. de Magnitudes": "2.7",
+    "Máx. de Magnitudes": "6.9"
+  },
+  {
+    "region": "Región del Bío-Bío",
+    "Mín. de codregion": "8",
+    "Cuenta de Magnitudes": "142",
+    "Promedio de Magnitudes": "4.423239437",
+    "Mín. de Magnitudes": "2.7",
+    "Máx. de Magnitudes": "6.3"
+  },
+  {
+    "region": "Región del Libertador Bernardo O'Higgins",
+    "Mín. de codregion": "6",
+    "Cuenta de Magnitudes": "84",
+    "Promedio de Magnitudes": "4.536904762",
+    "Mín. de Magnitudes": "2.7",
+    "Máx. de Magnitudes": "6.6"
+  },
+  {
+    "region": "Región del Maule",
+    "Mín. de codregion": "7",
+    "Cuenta de Magnitudes": "100",
+    "Promedio de Magnitudes": "4.474",
+    "Mín. de Magnitudes": "2.6",
+    "Máx. de Magnitudes": "6.8"
+  },
+  {
+    "region": "Región Metropolitana de Santiago",
+    "Mín. de codregion": "13",
+    "Cuenta de Magnitudes": "74",
+    "Promedio de Magnitudes": "4.347297297",
+    "Mín. de Magnitudes": "2.3",
+    "Máx. de Magnitudes": "5.7"
+  },
+  {
+    "region": "Suma total",
+    "Mín. de codregion": "1",
+    "Cuenta de Magnitudes": "4018",
+    "Promedio de Magnitudes": "4.428944749",
+    "Mín. de Magnitudes": "2.3",
+    "Máx. de Magnitudes": "8.4"
+  }
+]
