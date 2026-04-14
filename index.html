@@ -13,11 +13,24 @@
     <body>
         <div id="grafico-sismos" style="width:800px;height:700px"></div>
         <script>
-            fetch('../datos-regiones.json').then(response => response.json())
-            .then(datos)
 
-            console.log(datos)
+            async function grafico_sismos() {
+                const llamado_datos = await fetch('../datos-regiones.json');
+                const datos = await llamado_datos.json();
+                
+                const lista_datos = [{
+                    
+                }]
 
+                const forma = {
+                    margin: {t : 40},
+                    title: {text: 'Sismos en Chile Divididos por Región'}
+                };
+
+                Plotly.newPlot('grafico-sismos', '', forma);
+            }
+
+            grafico_sismos();
 
         </script>
 
