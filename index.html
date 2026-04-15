@@ -28,14 +28,21 @@
                     type: 'scatter'
                 }];
 
-
+                const lista_etiquetas = [];
+                for (let i=0;i<datos.length;i++){
+                    lista_etiquetas.push({
+                        x: parseInt(datos[i].cuenta_magnitudes),
+                        y: parseFloat(datos[i].promedio_magnitudes),
+                        xref: 'x',
+                        yref: 'y',
+                        text: datos[i].region
+                    });
+                };
 
                 const forma = {
                     margin: {t : 40},
                     title: {text: 'Sismos en Chile Divididos por Región'},
-                    annotations: [
-
-                    ]
+                    annotations: lista_etiquetas
                 };
 
                 Plotly.newPlot('grafico-sismos', datos_grafico, forma, {displayModeBar: false});
