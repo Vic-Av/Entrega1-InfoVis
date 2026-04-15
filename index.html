@@ -11,23 +11,34 @@
     </head>
 
     <body>
-        <div id="grafico-sismos" style="width:800px;height:700px"></div>
+        <div id="grafico-sismos" style="width:1200px;height:2000px"></div>
         <script>
 
             async function grafico_sismos() {
                 const llamado_datos = await fetch('../datos-regiones.json');
                 const datos = await llamado_datos.json();
-                
-                const lista_datos = [{
-                    
-                }]
+
+                const lista_frecuencia = datos.map(tupla => parseInt(tupla.cuenta_magnitudes));
+                const lista_promedio = datos.map(tupla => parseFloat(tupla.promedio_magnitudes));
+
+                const datos_grafico = [{
+                    x: lista_frecuencia,
+                    y: lista_promedio,
+                    mode: 'markers',
+                    type: 'scatter'
+                }];
+
+
 
                 const forma = {
                     margin: {t : 40},
-                    title: {text: 'Sismos en Chile Divididos por Región'}
+                    title: {text: 'Sismos en Chile Divididos por Región'},
+                    annotations: [
+
+                    ]
                 };
 
-                Plotly.newPlot('grafico-sismos', '', forma);
+                Plotly.newPlot('grafico-sismos', datos_grafico, forma, {displayModeBar: false});
             }
 
             grafico_sismos();
