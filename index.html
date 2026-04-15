@@ -15,10 +15,10 @@
         <script>
 
             async function grafico_sismos() {
-                const llamado_datos = await fetch('./datos-regiones.json');
+                const llamado_datos = await fetch('./datos-regiones-x-km2.json');
                 const datos = await llamado_datos.json();
 
-                const lista_frecuencia = datos.map(tupla => parseInt(tupla.cuenta_magnitudes));
+                const lista_frecuencia = datos.map(tupla => parseInt(tupla.sismos_10000km2));
                 const lista_promedio = datos.map(tupla => parseFloat(tupla.promedio_magnitudes));
 
                 const datos_grafico = [{
@@ -31,7 +31,7 @@
                 const lista_etiquetas = [];
                 for (let i=0;i<datos.length;i++){
                     lista_etiquetas.push({
-                        x: parseInt(datos[i].cuenta_magnitudes),
+                        x: parseInt(datos[i].sismos_10000km2),
                         y: parseFloat(datos[i].promedio_magnitudes),
                         ax: 0,
                         ay: -30,
@@ -48,7 +48,7 @@
                     title: {text: 'Sismos en Chile Divididos por Región (Marzo 2012 - Mayo 2025)'},
                     annotations: lista_etiquetas,
                     yaxis: {nticks: 40, title: {text: 'Magnitud promedio en Escala Richter'}},
-                    xaxis: {title: {text: 'Cantidad de sismos registrados'}}
+                    xaxis: {title: {text: 'Cantidad de sismos registrados cada 10.000km^2'}}
                 };
 
                 Plotly.newPlot('grafico-sismos', datos_grafico, forma, {staticPlot: true});
