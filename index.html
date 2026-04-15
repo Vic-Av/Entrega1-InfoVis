@@ -11,7 +11,7 @@
     </head>
 
     <body>
-        <div id="grafico-sismos" style="width:2000px;height:2000px"></div>
+        <div id="grafico-sismos" style="width:1200px;height:700px"></div>
         <script>
 
             async function grafico_sismos() {
@@ -47,8 +47,8 @@
                     margin: {t: 40},
                     title: {text: 'Sismos en Chile Divididos por Región (Marzo 2012 - Mayo 2025)'},
                     annotations: lista_etiquetas,
-                    yaxis: {nticks: 40, title: {text: 'Magnitud promedio en Escala Richter'}},
-                    xaxis: {title: {text: 'Cantidad de sismos registrados cada 10.000km^2'}}
+                    yaxis: {nticks: 40, title: {text: 'Magnitud promedio en Escala Richter'}, rangemode: "nonnegative"},
+                    xaxis: {nticks: 40, title: {text: 'Cantidad de sismos registrados cada 10.000km<sup>2</sup>'}, rangemode: "nonnegative"}
                 };
 
                 Plotly.newPlot('grafico-sismos', datos_grafico, forma, {staticPlot: true});
