@@ -15,7 +15,7 @@
         <script>
 
             async function grafico_sismos() {
-                const llamado_datos = await fetch('Entrega1-InfoVis/datos-regiones.json');
+                const llamado_datos = await fetch('./datos-regiones.json');
                 const datos = await llamado_datos.json();
 
                 const lista_frecuencia = datos.map(tupla => parseInt(tupla.cuenta_magnitudes));
