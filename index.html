@@ -11,7 +11,7 @@
     </head>
 
     <body>
-        <div id="grafico-sismos" style="width:1200px;height:2000px"></div>
+        <div id="grafico-sismos" style="width:2000px;height:2000px"></div>
         <script>
 
             async function grafico_sismos() {
@@ -33,19 +33,25 @@
                     lista_etiquetas.push({
                         x: parseInt(datos[i].cuenta_magnitudes),
                         y: parseFloat(datos[i].promedio_magnitudes),
+                        ax: 0,
+                        ay: -30,
                         xref: 'x',
                         yref: 'y',
-                        text: datos[i].region
+                        text: datos[i].region,
+                        showarrow: true,
+                        arrowhead: 3
                     });
                 };
 
                 const forma = {
-                    margin: {t : 40},
-                    title: {text: 'Sismos en Chile Divididos por Región'},
-                    annotations: lista_etiquetas
+                    margin: {t: 40},
+                    title: {text: 'Sismos en Chile Divididos por Región (Marzo 2012 - Mayo 2025)'},
+                    annotations: lista_etiquetas,
+                    yaxis: {nticks: 40, title: {text: 'Magnitud promedio en Escala Richter'}},
+                    xaxis: {title: {text: 'Cantidad de sismos registrados'}}
                 };
 
-                Plotly.newPlot('grafico-sismos', datos_grafico, forma, {displayModeBar: false});
+                Plotly.newPlot('grafico-sismos', datos_grafico, forma, {staticPlot: true});
             }
 
             grafico_sismos();
