@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
 
-        <title>Proto</title>
+        <title>Fichajes</title>
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,30 +16,16 @@
             body{
                 margin: 0;
                 padding: 0;
-                background: #404040;
+                background: #000000;
             }
 
             .header {
-                display: grid;
-                grid-template-columns: 1fr 2fr 2fr 2fr;
-                padding: 0px;
+                padding: 20px;
                 text-align: center;
-                background: #000000;
+                background: #1d1d1d;
                 color: white;
                 font-family: "Roboto", sans-serif;
-                
             }
-
-            .fakebutton {
-                border: solid 1px;
-                border-color: gray;
-                background: #000000;
-                color:gray;
-                padding: 30px;
-                font-size: 25px;
-                font-family: "Roboto", sans-serif;
-            }
-
 
         </style>
 
@@ -50,67 +36,55 @@
 
     <body>
         <div class="header">
-                <h1>DatosFútbol</h1>
-                <div class="fakebutton">Buscar Tablas</div>
-                <div class="fakebutton">Categorías</div>
-                <div class="fakebutton">Acerca de</div>
+                <h1>Inflación del Mercado de Fichajes</h1>
+                <h2>El récord del fichaje del fútbol más caro (1956 - 2017) y su ajuste a la inflación de Q2 2026.</h2>
         </div>
 
 
-        <!-- aquí se encuentra el código del gráfico de sismos original
-        <div id="grafico-sismos" style="width:1200px;height:700px"></div>
+        <div id="grafico-fichajes" style="width: 100%;height:70%"></div>
         <script>
-
-            async function grafico_sismos() {
-                const llamado_datos = await fetch('./datos-regiones.json');
+            async function grafico_fichajes() {
+                const llamado_datos = await fetch('./datos-fichajes.json');
                 const datos = await llamado_datos.json();
 
-                const lista_frecuencia = datos.map(tupla => parseInt(tupla.cuenta_magnitudes));
-                const lista_promedio = datos.map(tupla => parseFloat(tupla.promedio_magnitudes));
+                const lista_años = (datos.map(tupla => (tupla['fecha_fichaje'].split("/"))[2])).reverse();
 
-                const datos_grafico = [{
-                    x: lista_frecuencia,
-                    y: lista_promedio,
-                    mode: 'markers',
-                    type: 'scatter'
-                }];
+                lista_años[10] = '1997 (A)';
+                lista_años[11] = '1997 (R)';
+                lista_años[14] = '2000 (C)';
+                lista_años[15] = '2000 (F)';
 
-                const lista_etiquetas = [];
-                for (let i=0;i<datos.length;i++){
-                    lista_etiquetas.push({
-                        x: parseInt(datos[i].cuenta_magnitudes),
-                        y: parseFloat(datos[i].promedio_magnitudes),
-                        ax: 0,
-                        ay: -30,
-                        xref: 'x',
-                        yref: 'y',
-                        text: datos[i].region,
-                        showarrow: true,
-                        arrowhead: 3
-                    });
+                const lista_records = (datos.map(tupla => parseFloat(tupla['coste']))).reverse();
+                const lista_inflados = (datos.map(tupla => parseFloat(tupla['precio_ajustado']))).reverse();
+
+
+                const datos_records = {
+                    x: lista_años,
+                    y: lista_records,
+                    mode: "lines+markers",
+                    type: "scatter",
+                    marker: {color: 'red', symbol: 'diamond'}
                 };
 
+                const datos_inflados = {
+                    x: lista_años,
+                    y: lista_inflados,
+                    mode: "lines+markers",
+                    type: "scatter",
+                    marker: {color: 'blue', symbol: 'diamond'}
+                };
+                
                 const forma = {
-                    margin: {t: 40},
-                    title: {text: 'Sismos en Chile Divididos por Región (Marzo 2012 - Mayo 2025)'},
-                    annotations: lista_etiquetas,
-                    yaxis: {nticks: 40, title: {text: 'Magnitud promedio en Escala Richter'}, rangemode: "nonnegative"},
-                    xaxis: {nticks: 40, title: {text: 'Cantidad de sismos registrados'}, rangemode: "nonnegative"}
+                    yaxis: {nticks: 40, rangemode: 'nonnegative'},
+                    xaxis: {dtick: "M12", range: ['1955-01-01', '2018-01-01'], type: 'category'},
                 };
 
-                Plotly.newPlot('grafico-sismos', datos_grafico, forma, {staticPlot: true});
-            }
+                Plotly.newPlot('grafico-fichajes', [datos_records, datos_inflados], forma);
+            };
 
-            grafico_sismos();
+            grafico_fichajes();
 
         </script>
-        -->
-
-
-
-
-
-
 
 
     </body>
