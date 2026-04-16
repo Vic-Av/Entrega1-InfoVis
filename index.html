@@ -20,7 +20,7 @@
             }
 
             .header {
-                padding: 20px;
+                padding: 1px;
                 text-align: center;
                 background: #1d1d1d;
                 color: white;
@@ -37,49 +37,87 @@
     <body>
         <div class="header">
                 <h1>Inflación del Mercado de Fichajes</h1>
-                <h2>El récord del fichaje del fútbol más caro (1956 - 2017) y su ajuste a la inflación de Q2 2026.</h2>
+                <div>El récord del fichaje más caro en el fútbol (1956 - 2017) y su ajuste a la inflación de Q2 2026.</div>
         </div>
 
 
-        <div id="grafico-fichajes" style="width: 100%;height:70%"></div>
+        <div id="grafico-fichajes" style="width: 100%;height: 520px;padding: 0px"></div>
         <script>
             async function grafico_fichajes() {
                 const llamado_datos = await fetch('./datos-fichajes.json');
                 const datos = await llamado_datos.json();
 
-                const lista_años = (datos.map(tupla => (tupla['fecha_fichaje'].split("/"))[2])).reverse();
+                const lista_fechas = (datos.map(tupla => (tupla['fecha_fichaje'].split("/"))[2])).reverse();
 
-                lista_años[10] = '1997 (A)';
-                lista_años[11] = '1997 (R)';
-                lista_años[14] = '2000 (C)';
-                lista_años[15] = '2000 (F)';
+                lista_fechas[10] = '1997 (A)';
+                lista_fechas[11] = '1997 (R)';
+                lista_fechas[14] = '2000 (C)';
+                lista_fechas[15] = '2000 (F)';
 
                 const lista_records = (datos.map(tupla => parseFloat(tupla['coste']))).reverse();
                 const lista_inflados = (datos.map(tupla => parseFloat(tupla['precio_ajustado']))).reverse();
 
 
+                const lista_nombres = (datos.map(tupla => tupla['jugador'])).reverse();
+                const lista_etiquetas = [];
+
+                for (let i=0; i<21; i++){
+                    lista_etiquetas.push(
+                        {
+                            x: i,
+                            y: lista_inflados[i]+35,
+                            textangle: -90,
+                            xref: 'x',
+                            yref: 'y',
+                            text: lista_nombres[i],
+                            showarrow: false,
+                            font: {
+                                family: 'Roboto',
+                                color: 'white'
+                            },
+                            bgcolor: '#000000'
+                        }
+                    );
+                };
+
                 const datos_records = {
-                    x: lista_años,
+                    x: lista_fechas,
                     y: lista_records,
                     mode: "lines+markers",
                     type: "scatter",
-                    marker: {color: 'red', symbol: 'diamond'}
+                    marker: {color: 'blue', symbol: 'diamond'},
+                    name: 'Costo en M€ según valor de € en la fecha'
                 };
 
                 const datos_inflados = {
-                    x: lista_años,
+                    x: lista_fechas,
                     y: lista_inflados,
                     mode: "lines+markers",
                     type: "scatter",
-                    marker: {color: 'blue', symbol: 'diamond'}
+                    marker: {color: 'red', symbol: 'diamond'},
+                    name: 'Costo en M€ según el valor de € hoy'
                 };
                 
                 const forma = {
-                    yaxis: {nticks: 40, rangemode: 'nonnegative'},
-                    xaxis: {dtick: "M12", range: ['1955-01-01', '2018-01-01'], type: 'category'},
+                    yaxis: {nticks: 40, rangemode: 'nonnegative', color: 'lightgray', gridcolor: 'gray'},
+                    xaxis: {dtick: "M12", range: ['1955-01-01', '2018-01-01'], type: 'category', color: 'lightgray', gridcolor: 'gray'},
+                    plot_bgcolor: 'black',
+                    paper_bgcolor: 'black',
+                    annotations: lista_etiquetas,
+                    margin: {
+                        l: 40,
+                        r: 0,
+                        b: 40,
+                        t: 10
+                    },
+                    legend: {
+                        font: {
+                            color: 'white'
+                        }
+                    }
                 };
 
-                Plotly.newPlot('grafico-fichajes', [datos_records, datos_inflados], forma);
+                Plotly.newPlot('grafico-fichajes', [datos_records, datos_inflados], forma, {staticPlot: 'true'});
             };
 
             grafico_fichajes();
