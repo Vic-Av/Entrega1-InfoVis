@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
 
-        <title>Fichajes</title>
+        <title>Inflación de Fichajes</title>
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,8 +36,8 @@
 
     <body>
         <div class="header">
-                <h1>Inflación del Mercado de Fichajes</h1>
-                <div>El récord del fichaje más caro en el fútbol (1956 - 2017) y su ajuste a la inflación de Q2 2026.</div>
+                <h1 style="font-family: 'Roboto', sans-serif">Inflación del Mercado de Fichajes</h1>
+                <div style="font-family: 'Roboto', sans-serif">La historia del récord de fichaje más caro en el fútbol (1956 - 2017), medido en millones de euros, con su ajuste a la inflación para la actualidad (abril de 2026).</div>
         </div>
 
 
@@ -85,8 +85,8 @@
                     y: lista_records,
                     mode: "lines+markers",
                     type: "scatter",
-                    marker: {color: 'blue', symbol: 'diamond'},
-                    name: 'Costo en M€ según valor de € en la fecha'
+                    marker: {color: 'blue', symbol: 'circle', size: 8},
+                    name: 'Costo en M€ según valor de € en fecha de récord'
                 };
 
                 const datos_inflados = {
@@ -94,23 +94,25 @@
                     y: lista_inflados,
                     mode: "lines+markers",
                     type: "scatter",
-                    marker: {color: 'red', symbol: 'diamond'},
+                    marker: {color: 'red', symbol: 'diamond', size: 8},
                     name: 'Costo en M€ según el valor de € hoy'
                 };
                 
                 const forma = {
-                    yaxis: {nticks: 40, rangemode: 'nonnegative', color: 'lightgray', gridcolor: 'gray'},
-                    xaxis: {dtick: "M12", range: ['1955-01-01', '2018-01-01'], type: 'category', color: 'lightgray', gridcolor: 'gray'},
+                    yaxis: {title: {text: 'Costo en millones de euros (€)'}, nticks: 40, rangemode: 'nonnegative', color: 'lightgray', gridcolor: 'gray'},
+                    xaxis: {title: {text: 'Año de cada nuevo récord'}, dtick: "M12", range: ['1955-01-01', '2018-01-01'], type: 'category', color: 'lightgray', gridcolor: 'gray'},
                     plot_bgcolor: 'black',
                     paper_bgcolor: 'black',
                     annotations: lista_etiquetas,
                     margin: {
-                        l: 40,
-                        r: 0,
+                        l: 60,
+                        r: 10,
                         b: 40,
                         t: 10
                     },
                     legend: {
+                        orientation: 'h',
+                        yanchor: 'bottom',
                         font: {
                             color: 'white'
                         }
