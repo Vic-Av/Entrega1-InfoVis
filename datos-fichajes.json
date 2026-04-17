@@ -1,6 +1,6 @@
 [
   {
-    "jugador": "Neymar",
+    "jugador": "Neymar da Silva",
     "posicion": "Mediocentro ofensivo",
     "edad": "25",
     "fecha_fichaje": "08/03/2017",
@@ -52,7 +52,7 @@
     "precio_ajustado": "128"
   },
   {
-    "jugador": "Zinédine Zidane",
+    "jugador": "Zinedine Zidane",
     "posicion": "Mediocentro ofensivo",
     "edad": "29",
     "fecha_fichaje": "07/09/2001",
@@ -104,7 +104,7 @@
     "precio_ajustado": "75"
   },
   {
-    "jugador": "Denilson",
+    "jugador": "Denílson de Oliveira",
     "posicion": "Extremo izquierdo",
     "edad": "20",
     "fecha_fichaje": "07/30/1998",
@@ -117,7 +117,7 @@
     "precio_ajustado": "54.8"
   },
   {
-    "jugador": "Ronaldo",
+    "jugador": "Ronaldo Nazário",
     "posicion": "Delantero centro",
     "edad": "20",
     "fecha_fichaje": "07/25/1997",
