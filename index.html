@@ -118,8 +118,11 @@
                     y: lista_records,
                     mode: "lines+markers",
                     type: "scatter",
-                    marker: {color: 'blue', symbol: 'circle', size: 8},
-                    name: 'Costo en M€ según valor de € en fecha de récord'
+                    marker: {color: 'blue', symbol: 'circle', size: 10},
+                    name: 'Costo en M€ según valor de € en fecha de récord',
+                    line: {
+                        shape: 'hv'
+                    }
                 };
 
                 const datos_inflados = {
@@ -127,8 +130,11 @@
                     y: lista_inflados,
                     mode: "lines+markers",
                     type: "scatter",
-                    marker: {color: 'red', symbol: 'diamond', size: 8},
-                    name: 'Costo en M€ según el valor de € hoy'
+                    marker: {color: 'red', symbol: 'diamond', size: 10},
+                    name: 'Costo en M€ según el valor de € hoy',
+                    line: {
+                        shape: 'hv'
+                    }
                 };
                 
                 const forma = {
@@ -151,6 +157,12 @@
                         }
                     }
                 };
+
+
+                lista_etiquetas[1]['y'] = 100;
+                lista_etiquetas[3]['y'] = 60;
+                lista_etiquetas[5]['y'] = 70;
+                lista_etiquetas[12]['y'] = 100;
 
                 Plotly.newPlot('grafico-fichajes', [datos_records, datos_inflados], forma, {staticPlot: 'true'});
             };
