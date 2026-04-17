@@ -65,7 +65,7 @@
                     lista_etiquetas.push(
                         {
                             x: i,
-                            y: lista_inflados[i]+35,
+                            y: lista_inflados[i]+40,
                             textangle: -90,
                             xref: 'x',
                             yref: 'y',
@@ -79,6 +79,39 @@
                         }
                     );
                 };
+
+                lista_etiquetas.push(
+                    {
+                        x: 10.5,
+                        y: 140,
+                        xref: 'x',
+                        yref: 'y',
+                        text: "El fichaje de Ronaldo batió rápidamente el<br>otro récord establecido en julio de 1997.",
+                        showarrow: false,
+                        font: {
+                            family: 'Roboto',
+                            color: 'white',
+                            size: 12
+                        },
+                        bgcolor: '#1f1f1f',
+                        bordercolor: 'white'
+                    },
+                    {
+                        x: 14.5,
+                        y: 180,
+                        xref: 'x',
+                        yref: 'y',
+                        text: "El costo del fichaje de Figo superó a<br>aquel de Crespo el mismo año.",
+                        showarrow: false,
+                        font: {
+                            family: 'Roboto',
+                            color: 'white',
+                            size: 12
+                        },
+                        bgcolor: '#1f1f1f',
+                        bordercolor: 'white'
+                    }
+                );
 
                 const datos_records = {
                     x: lista_fechas,
