@@ -1,160 +1,184 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Inflación de Fichajes</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
     <style>
-        body { margin: 0; padding: 0; background: #000000; font-family: "Roboto", sans-serif; color: white; overflow: hidden; }
-        
-        .header { padding: 20px; text-align: center; background: #1d1d1d; }
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000000;
+            font-family: "Roboto", sans-serif;
+            color: white;
+        }
 
-        
-        .main-container { display: flex; height: 80vh; width: 100vw; }
+        .header {
+            padding: 10px;
+            text-align: center;
+            background: #1d1d1d;
+        }
 
-        #chart { width: 70%; height: 100%; }
+        /* Contenedor para que el gráfico y el panel estén lado a lado */
+        .main-content {
+            display: flex;
+            width: 100%;
+            height: 550px;
+        }
 
-       
-        #info-panel {
-            width: 30%;
-            padding: 40px;
+        #grafico-fichajes {
+            flex: 3; /* El gráfico toma más espacio */
+        }
+
+        /* Panel lateral estilizado */
+        #panel-info {
+            flex: 1;
+            background: #0a0a0a;
+            border-left: 1px solid #333;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            opacity: 0; /* Empieza invisible */
+            padding: 20px;
+            opacity: 0; /* Invisible hasta que hagamos hover */
             transition: opacity 0.3s ease;
-            background: linear-gradient(180deg, #000 0%, #1a1a1a 100%);
-            border-left: 1px solid #333;
         }
 
-        #player-photo {
-            width: 200px; height: 200px;
+        #foto-jugador {
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
-            border: 4px solid blue;
+            border: 3px solid red;
             background-size: cover;
             background-position: center;
-            margin-bottom: 20px;
-            box-shadow: 0 0 20px rgba(0, 0, 255, 0.3);
+            margin-bottom: 15px;
         }
 
-        #player-name { font-size: 24px; font-weight: bold; margin-bottom: 10px; text-align: center; }
-        .details { font-size: 16px; color: #aaa; margin: 5px 0; }
-        .price-tag { font-size: 28px; color: #ff4d4d; font-weight: bold; margin-top: 15px; }
+        .texto-info { text-align: center; }
+        .nombre { font-size: 1.5em; font-weight: bold; margin-bottom: 5px; }
+        .clubes { color: #aaa; font-style: italic; margin-bottom: 15px; }
+        .precio { font-size: 1.8em; color: #ff4d4d; font-weight: 900; }
     </style>
 </head>
 
 <body>
     <div class="header">
         <h1>Inflación del Mercado de Fichajes</h1>
-        <div>Récords históricos (1956 - 2017) ajustados a abril de 2026.</div>
+        <div>La historia del récord de fichaje más caro en el fútbol (1956 - 2017), medido en millones de euros, con su ajuste a la inflación.</div>
     </div>
 
-    <div class="main-container">
-        <div id="chart"></div>
+    <div class="main-content">
+        <div id="grafico-fichajes"></div>
 
-        <div id="info-panel">
-            <div id="player-photo"></div>
-            <div id="player-name">NOMBRE JUGADOR</div>
-            <div class="details" id="clubs">Club Origen ➜ Club Destino</div>
-            <div class="details" id="year-detail">Año del Fichaje</div>
-            <div class="price-tag" id="price">00 M€</div>
+        <div id="panel-info">
+            <div id="foto-jugador"></div>
+            <div class="texto-info">
+                <div id="info-nombre" class="nombre"></div>
+                <div id="info-clubes" class="clubes"></div>
+                <div id="info-precio" class="precio"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        async function readDataAndPlot() {
-            const response = await fetch('./datos-fichajes.json');
-            const datos_raw = await response.json();
-            // Invertimos para orden cronológico
-            const datos = datos_raw.reverse();
+        async function grafico_fichajes() {
+            const llamado_datos = await fetch('./datos-fichajes.json');
+            const datos_json = await llamado_datos.json();
+            
+            // Invertimos el array completo una vez para que los índices coincidan siempre
+            const datos = datos_json.reverse();
 
-            const lista_fechas = datos.map(t => t.fecha_fichaje.split("/")[2]);
-            // Ajustes manuales de etiquetas que tenías
-            lista_fechas[10] = '1997 (A)'; lista_fechas[11] = '1997 (R)';
-            lista_fechas[14] = '2000 (C)'; lista_fechas[15] = '2000 (F)';
+            const lista_fechas = datos.map(tupla => (tupla['fecha_fichaje'].split("/"))[2]);
+            lista_fechas[10] = '1997 (A)';
+            lista_fechas[11] = '1997 (R)';
+            lista_fechas[14] = '2000 (C)';
+            lista_fechas[15] = '2000 (F)';
 
-            const lista_records = datos.map(t => parseFloat(t.coste));
-            const lista_inflados = datos.map(t => parseFloat(t.precio_ajustado));
-            const lista_nombres = datos.map(t => t.jugador);
+            const lista_records = datos.map(tupla => parseFloat(tupla['coste']));
+            const lista_inflados = datos.map(tupla => parseFloat(tupla['precio_ajustado']));
+            const lista_nombres = datos.map(tupla => tupla['jugador']);
 
-            const annotations = lista_nombres.map((nom, i) => {
-                let yPos = lista_inflados[i] + 40;
-                // Tus ajustes de altura específicos
-                if(i==1) yPos = 100; if(i==3) yPos = 60; if(i==5) yPos = 70; if(i==12) yPos = 100;
-                
-                return {
-                    x: i, y: yPos, text: nom, textangle: -90,
-                    xref: 'x', yref: 'y', showarrow: false,
-                    font: { family: 'Roboto', color: 'white', size: 10 },
+            const lista_etiquetas = [];
+            for (let i = 0; i < 21; i++) {
+                lista_etiquetas.push({
+                    x: i,
+                    y: lista_inflados[i] + 40,
+                    textangle: -90,
+                    xref: 'x',
+                    yref: 'y',
+                    text: lista_nombres[i],
+                    showarrow: false,
+                    font: { family: 'Roboto', color: 'white' },
                     bgcolor: 'rgba(0,0,0,0.5)'
-                };
-            });
-
-            const trace_original = {
-                x: lista_fechas, y: lista_records,
-                mode: 'lines+markers', name: 'Costo Original',
-                line: { color: 'gray', width: 1 },
-                marker: { color: 'blue', size: 8 },
-                hoverinfo: 'none'
+                });
             };
-
-            const trace_ajustado = {
-                x: lista_fechas, y: lista_inflados,
-                mode: 'lines+markers', name: 'Costo Ajustado',
-                line: { color: 'red', width: 1 },
-                marker: { color: 'red', symbol: 'diamond', size: 8 },
-                hoverinfo: 'none'
-            };
-
-            const layout = {
-                plot_bgcolor: 'black', paper_bgcolor: 'black',
-                margin: { l: 80, r: 20, t: 20, b: 60 },
-                xaxis: { type: 'category', color: 'lightgray', showgrid: false },
-                yaxis: { title: 'Millones de Euros (€)', color: 'lightgray', gridcolor: '#333' },
-                showlegend: true,
-                legend: { font: { color: 'white' }, orientation: 'h', y: -0.2 },
-                annotations: annotations
-            };
-
-            const chartDiv = document.getElementById('chart');
-            Plotly.newPlot(chartDiv, [trace_original, trace_ajustado], layout, {displayModeBar: false});
 
             
-            chartDiv.on('plotly_hover', function(eventData) {
-                
-                document.getElementById('info-panel').style.opacity = 1;
+            lista_etiquetas[1]['y'] = 100;
+            lista_etiquetas[3]['y'] = 60;
+            lista_etiquetas[5]['y'] = 70;
+            lista_etiquetas[12]['y'] = 100;
 
-                const pointIndex = eventData.points[0].pointIndex;
-                const p = datos[pointIndex];
+            const datos_records = {
+                x: lista_fechas,
+                y: lista_records,
+                mode: "lines+markers",
+                marker: { color: 'blue', size: 10 },
+                name: 'Costo Original',
+                hoverinfo: 'none' // Desactivamos el tooltip por defecto de Plotly
+            };
 
-                
-                document.getElementById('player-name').innerHTML = p.jugador;
-                document.getElementById('clubs').innerHTML = `${p.ultimo_club} ➜ ${p.nuevo_club}`;
-                document.getElementById('year-detail').innerHTML = `Fecha: ${p.fecha_fichaje}`;
-                document.getElementById('price').innerHTML = `${p.coste} M€`;
+            const datos_inflados = {
+                x: lista_fechas,
+                y: lista_inflados,
+                mode: "lines+markers",
+                marker: { color: 'red', symbol: 'diamond', size: 10 },
+                name: 'Costo Ajustado (Abril 2026)',
+                hoverinfo: 'none'
+            };
 
-                // Actualizar Foto (Lógica de nombre de archivo)
-                let nombreClean = p.jugador.split(" ").pop().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                if (p.jugador.includes("Cristiano")) nombreClean = "cristiano";
-                if (p.jugador.includes("Ronaldo Nazário")) nombreClean = "ronaldo";
+            const forma = {
+                yaxis: { title: 'Millones de Euros (€)', gridcolor: '#333', color: 'lightgray' },
+                xaxis: { type: 'category', color: 'lightgray', showgrid: false },
+                plot_bgcolor: 'black',
+                paper_bgcolor: 'black',
+                annotations: lista_etiquetas,
+                margin: { l: 60, r: 10, b: 40, t: 30 },
+                legend: { orientation: 'h', font: { color: 'white' }, y: -0.2 }
+            };
+
+            const graficoDiv = document.getElementById('grafico-fichajes');
+
+            // IMPORTANTE: Quitamos staticPlot: true para habilitar el hover
+            Plotly.newPlot(graficoDiv, [datos_records, datos_inflados], forma, { displayModeBar: false });
+
+            // Lógica de Interacción 
+            
+            graficoDiv.on('plotly_hover', function(data) {
+                const punto = data.points[0].pointIndex;
+                const j = datos[punto];
                 
-                const photoDiv = document.getElementById('player-photo');
-                photoDiv.style.backgroundImage = `url('img/${nombreClean}.webp')`;
-                // Fallback por si no encuentra la foto
-                photoDiv.style.backgroundRepeat = 'no-repeat';
+                document.getElementById('panel-info').style.opacity = 1;
+                document.getElementById('info-nombre').innerText = j.jugador;
+                document.getElementById('info-clubes').innerText = `${j.ultimo_club} ➜ ${j.nuevo_club}`;
+                document.getElementById('info-precio').innerText = `${j.precio_ajustado} M€`;
+
+                // Procesamos el nombre para la imagen (ej: "Zidane")
+                const apellido = j.jugador.split(" ").pop().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                document.getElementById('foto-jugador').style.backgroundImage = `url('img/${apellido}.webp')`;
             });
 
-            chartDiv.on('plotly_unhover', function() {
-                document.getElementById('info-panel').style.opacity = 0;
+            graficoDiv.on('plotly_unhover', function() {
+                document.getElementById('panel-info').style.opacity = 0;
             });
-        }
+        };
 
-        readDataAndPlot();
+        grafico_fichajes();
     </script>
 </body>
 </html>
