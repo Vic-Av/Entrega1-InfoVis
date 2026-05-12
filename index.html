@@ -46,127 +46,98 @@
             async function grafico_fichajes() {
                 const llamado_datos = await fetch('./datos-fichajes.json');
                 const datos = await llamado_datos.json();
-
-                const lista_fechas = (datos.map(tupla => (tupla['fecha_fichaje'].split("/"))[2])).reverse();
-
+            
+                
+                const datosOrdenados = datos.reverse();
+            
+                const lista_fechas = datosOrdenados.map(t => t.fecha_fichaje.split("/")[2]);
+                
                 lista_fechas[10] = '1997 (A)';
                 lista_fechas[11] = '1997 (R)';
                 lista_fechas[14] = '2000 (C)';
                 lista_fechas[15] = '2000 (F)';
-
-                const lista_records = (datos.map(tupla => parseFloat(tupla['coste']))).reverse();
-                const lista_inflados = (datos.map(tupla => parseFloat(tupla['precio_ajustado']))).reverse();
-
-
-                const lista_nombres = (datos.map(tupla => tupla['jugador'])).reverse();
-                const lista_etiquetas = [];
-
-                for (let i=0; i<21; i++){
-                    lista_etiquetas.push(
-                        {
-                            x: i,
-                            y: lista_inflados[i]+40,
-                            textangle: -90,
-                            xref: 'x',
-                            yref: 'y',
-                            text: lista_nombres[i],
-                            showarrow: false,
-                            font: {
-                                family: 'Roboto',
-                                color: 'white'
-                            },
-                            bgcolor: '#000000'
-                        }
-                    );
-                };
-
-                lista_etiquetas.push(
-                    {
-                        x: 10.5,
-                        y: 140,
-                        xref: 'x',
-                        yref: 'y',
-                        text: "El fichaje de Ronaldo batió rápidamente el <br>otro récord establecido en julio de 1997.",
-                        showarrow: false,
-                        font: {
-                            family: 'Roboto',
-                            color: 'white',
-                            size: 12
-                        },
-                        bgcolor: '#1f1f1f',
-                        bordercolor: 'white'
-                    },
-                    {
-                        x: 14.5,
-                        y: 180,
-                        xref: 'x',
-                        yref: 'y',
-                        text: "El costo del fichaje de Figo superó a <br>aquel de Crespo el mismo año.",
-                        showarrow: false,
-                        font: {
-                            family: 'Roboto',
-                            color: 'white',
-                            size: 12
-                        },
-                        bgcolor: '#1f1f1f',
-                        bordercolor: 'white'
+            
+                const lista_records = datosOrdenados.map(t => parseFloat(t.coste));
+                const lista_inflados = datosOrdenados.map(t => parseFloat(t.precio_ajustado));
+                const lista_nombres = datosOrdenados.map(t => t.jugador);
+            
+                
+                const lista_hovers = datosOrdenados.map(t => {
+                    let nombre = t.jugador;
+                    let extension = ".webp";
+                    let archivo = "";
+            
+                   
+                    if (nombre.includes("Cristiano Ronaldo")) { archivo = "cristiano"; }
+                    else if (nombre.includes("Ronaldo Nazário")) { archivo = "ronaldo"; }
+                    else if (nombre.includes("Raul Conti")) { archivo = "conti"; extension = ".jpg"; }
+                    else {
+                        
+                        archivo = nombre.split(" ").pop().toLowerCase()
+                                  .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
                     }
-                );
-
+            
+                    return `
+                        <div style="text-align:center; font-family:'Roboto'; padding:10px;">
+                            <img src="img/${archivo}${extension}" style="width:80px; height:80px; border-radius:50%; margin-bottom:5px;">
+                            <br>
+                            <b>${nombre}</b><br>
+                            <span>${t.ultimo_club} &#10132; ${t.nuevo_club}</span><br>
+                            <b style="color:red;">${t.coste} M€</b>
+                        </div>
+                    `;
+                });
+            
+                const lista_etiquetas = [];
+                for (let i = 0; i < 21; i++) {
+                    lista_etiquetas.push({
+                        x: i,
+                        y: lista_inflados[i] + 40,
+                        textangle: -90,
+                        xref: 'x', yref: 'y',
+                        text: lista_nombres[i],
+                        showarrow: false,
+                        font: { family: 'Roboto', color: 'white' },
+                        bgcolor: '#000000'
+                    });
+                }
+            
+                
                 const datos_records = {
                     x: lista_fechas,
                     y: lista_records,
                     mode: "lines+markers",
                     type: "scatter",
-                    marker: {color: 'blue', symbol: 'circle', size: 10},
-                    name: 'Costo en M€ según valor de € en fecha de récord',
-                    line: {
-                        shape: 'linear'
-                    }
+                    marker: { color: 'blue', symbol: 'circle', size: 10 },
+                    name: 'Costo Original',
+                    hoverinfo: 'none' 
                 };
-
+            
                 const datos_inflados = {
                     x: lista_fechas,
                     y: lista_inflados,
                     mode: "lines+markers",
                     type: "scatter",
-                    marker: {color: 'red', symbol: 'diamond', size: 10},
-                    name: 'Costo en M€ según el valor de € hoy',
-                    line: {
-                        shape: 'linear'
-                    }
+                    marker: { color: 'red', symbol: 'diamond', size: 10 },
+                    name: 'Costo Ajustado',
+                    text: lista_hovers, 
+                    hoverinfo: 'text' 
                 };
-                
+            
                 const forma = {
-                    yaxis: {title: {text: 'Costo en millones de euros (€)'}, showgrid: true, rangemode: 'nonnegative', gridcolor: '#333333', dtick: 50, color: 'lightgray'},
-                    xaxis: {title: {text: 'Año de cada nuevo récord'}, showgrid: false, dtick: "M12", range: ['1955-01-01', '2018-01-01'], type: 'category', color: 'lightgray'},
+                    hovermode: 'closest',
+                    yaxis: { title: { text: 'Costo en millones de euros (€)' }, showgrid: true, gridcolor: '#333333', color: 'lightgray' },
+                    xaxis: { title: { text: 'Año del Récord' }, showgrid: false, type: 'category', color: 'lightgray' },
                     plot_bgcolor: 'black',
                     paper_bgcolor: 'black',
                     annotations: lista_etiquetas,
-                    margin: {
-                        l: 60,
-                        r: 10,
-                        b: 40,
-                        t: 10
-                    },
-                    legend: {
-                        orientation: 'h',
-                        yanchor: 'bottom',
-                        font: {
-                            color: 'white'
-                        }
-                    }
+                    legend: { orientation: 'h', font: { color: 'white' } },
+                    margin: { l: 60, r: 10, b: 40, t: 10 }
                 };
-
-
-                lista_etiquetas[1]['y'] = 100;
-                lista_etiquetas[3]['y'] = 60;
-                lista_etiquetas[5]['y'] = 70;
-                lista_etiquetas[12]['y'] = 100;
-
-                Plotly.newPlot('grafico-fichajes', [datos_records, datos_inflados], forma, {staticPlot: 'true'});
-            };
-
+            
+                Plotly.newPlot('grafico-fichajes', [datos_records, datos_inflados], forma, { staticPlot: false });
+            }
+            
             grafico_fichajes();
 
         </script>
