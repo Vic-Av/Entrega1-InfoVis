@@ -42,134 +42,167 @@
 
 
         <div id="grafico-fichajes" style="width: 100%;height: 520px;padding: 0px"></div>
-        <script>
-            async function grafico_fichajes() {
-                const llamado_datos = await fetch('./datos-fichajes.json');
-                const datos = await llamado_datos.json();
-
-                const lista_fechas = (datos.map(tupla => (tupla['fecha_fichaje'].split("/"))[2])).reverse();
-
-                lista_fechas[10] = '1997 (A)';
-                lista_fechas[11] = '1997 (R)';
-                lista_fechas[14] = '2000 (C)';
-                lista_fechas[15] = '2000 (F)';
-
-                const lista_records = (datos.map(tupla => parseFloat(tupla['coste']))).reverse();
-                const lista_inflados = (datos.map(tupla => parseFloat(tupla['precio_ajustado']))).reverse();
-
-
-                const lista_nombres = (datos.map(tupla => tupla['jugador'])).reverse();
-                const lista_etiquetas = [];
-
-                for (let i=0; i<21; i++){
-                    lista_etiquetas.push(
-                        {
-                            x: i,
-                            y: lista_inflados[i]+40,
-                            textangle: -90,
-                            xref: 'x',
-                            yref: 'y',
-                            text: lista_nombres[i],
-                            showarrow: false,
-                            font: {
-                                family: 'Roboto',
-                                color: 'white'
-                            },
-                            bgcolor: '#000000'
-                        }
-                    );
+    <script>
+        async function grafico_fichajes() {
+            const llamado_datos = await fetch('./datos-fichajes.json');
+            const datos = await llamado_datos.json();
+    
+            // -------- FUNCION PARA IMAGEN --------
+            function obtenerNombreImagen(nombre) {
+                const excepciones = {
+                    "Cristiano Ronaldo": "cristiano.webp",
+                    "Ronaldo Nazário": "ronaldo.webp",
+                    "Raul Conti": "conti.jpg"
                 };
-
-                lista_etiquetas.push(
-                    {
-                        x: 10.5,
-                        y: 140,
-                        xref: 'x',
-                        yref: 'y',
-                        text: "El fichaje de Ronaldo batió rápidamente el <br>otro récord establecido en julio de 1997.",
-                        showarrow: false,
-                        font: {
-                            family: 'Roboto',
-                            color: 'white',
-                            size: 12
-                        },
-                        bgcolor: '#1f1f1f',
-                        bordercolor: 'white'
-                    },
-                    {
-                        x: 14.5,
-                        y: 180,
-                        xref: 'x',
-                        yref: 'y',
-                        text: "El costo del fichaje de Figo superó a <br>aquel de Crespo el mismo año.",
-                        showarrow: false,
-                        font: {
-                            family: 'Roboto',
-                            color: 'white',
-                            size: 12
-                        },
-                        bgcolor: '#1f1f1f',
-                        bordercolor: 'white'
-                    }
-                );
-
-                const datos_records = {
-                    x: lista_fechas,
-                    y: lista_records,
-                    mode: "lines+markers",
-                    type: "scatter",
-                    marker: {color: 'blue', symbol: 'circle', size: 10},
-                    name: 'Costo en M€ según valor de € en fecha de récord',
-                    line: {
-                        shape: 'linear'
-                    }
-                };
-
-                const datos_inflados = {
-                    x: lista_fechas,
-                    y: lista_inflados,
-                    mode: "lines+markers",
-                    type: "scatter",
-                    marker: {color: 'red', symbol: 'diamond', size: 10},
-                    name: 'Costo en M€ según el valor de € hoy',
-                    line: {
-                        shape: 'linear'
-                    }
-                };
-                
-                const forma = {
-                    yaxis: {title: {text: 'Costo en millones de euros (€)'}, showgrid: true, rangemode: 'nonnegative', gridcolor: '#333333', dtick: 50, color: 'lightgray'},
-                    xaxis: {title: {text: 'Año de cada nuevo récord'}, showgrid: false, dtick: "M12", range: ['1955-01-01', '2018-01-01'], type: 'category', color: 'lightgray'},
-                    plot_bgcolor: 'black',
-                    paper_bgcolor: 'black',
-                    annotations: lista_etiquetas,
-                    margin: {
-                        l: 60,
-                        r: 10,
-                        b: 40,
-                        t: 10
-                    },
-                    legend: {
-                        orientation: 'h',
-                        yanchor: 'bottom',
-                        font: {
-                            color: 'white'
-                        }
-                    }
-                };
-
-
-                lista_etiquetas[1]['y'] = 100;
-                lista_etiquetas[3]['y'] = 60;
-                lista_etiquetas[5]['y'] = 70;
-                lista_etiquetas[12]['y'] = 100;
-
-                Plotly.newPlot('grafico-fichajes', [datos_records, datos_inflados], forma, {staticPlot: 'true'});
+    
+                if (excepciones[nombre]) {
+                    return excepciones[nombre];
+                }
+    
+                let apellido = nombre.split(" ").slice(-1)[0];
+                apellido = apellido.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                apellido = apellido.toLowerCase();
+    
+                return apellido + ".webp";
+            }
+    
+            // -------- LISTAS --------
+            const lista_fechas = (datos.map(t => t['fecha_fichaje'].split("/")[2])).reverse();
+    
+            lista_fechas[10] = '1997 (A)';
+            lista_fechas[11] = '1997 (R)';
+            lista_fechas[14] = '2000 (C)';
+            lista_fechas[15] = '2000 (F)';
+    
+            const lista_records = (datos.map(t => parseFloat(t['coste']))).reverse();
+            const lista_inflados = (datos.map(t => parseFloat(t['precio_ajustado']))).reverse();
+            const lista_nombres = (datos.map(t => t['jugador'])).reverse();
+    
+            // -------- CUSTOMDATA (INFO PARA HOVER) --------
+            const lista_customdata = datos.map(t => {
+                const archivo = obtenerNombreImagen(t['jugador']);
+                return [
+                    t['jugador'],
+                    t['ultimo_club'],
+                    t['nuevo_club'],
+                    t['coste'],
+                    "./imagenes/" + archivo
+                ];
+            }).reverse();
+    
+            // -------- ANNOTATIONS (las de antes) --------
+            const lista_etiquetas = [];
+    
+            for (let i = 0; i < 21; i++) {
+                lista_etiquetas.push({
+                    x: i,
+                    y: lista_inflados[i] + 40,
+                    textangle: -90,
+                    text: lista_nombres[i],
+                    showarrow: false,
+                    font: { family: 'Roboto', color: 'white' },
+                    bgcolor: '#000000'
+                });
+            }
+    
+            lista_etiquetas.push(
+                {
+                    x: 10.5,
+                    y: 140,
+                    text: "El fichaje de Ronaldo batió rápidamente el <br>otro récord de 1997.",
+                    showarrow: false,
+                    font: { color: 'white', size: 12 },
+                    bgcolor: '#1f1f1f',
+                    bordercolor: 'white'
+                },
+                {
+                    x: 14.5,
+                    y: 180,
+                    text: "Figo superó a Crespo ese mismo año.",
+                    showarrow: false,
+                    font: { color: 'white', size: 12 },
+                    bgcolor: '#1f1f1f',
+                    bordercolor: 'white'
+                }
+            );
+    
+            // ajustes manuales
+            lista_etiquetas[1]['y'] = 100;
+            lista_etiquetas[3]['y'] = 60;
+            lista_etiquetas[5]['y'] = 70;
+            lista_etiquetas[12]['y'] = 100;
+    
+            // -------- TRACE 1 --------
+            const datos_records = {
+                x: lista_fechas,
+                y: lista_records,
+                customdata: lista_customdata,
+                mode: "lines+markers",
+                type: "scatter",
+                marker: { color: 'blue', size: 10 },
+                name: 'Costo en su época',
+                hovertemplate: `
+                    <b>%{customdata[0]}</b><br>
+                    <img src="%{customdata[4]}" style="width:80px;"><br>
+                    Traspaso: %{customdata[3]} M€<br>
+                    %{customdata[1]} → %{customdata[2]}
+                    <extra></extra>
+                `
             };
-
-            grafico_fichajes();
-
-        </script>
+    
+            // -------- TRACE 2 --------
+            const datos_inflados = {
+                x: lista_fechas,
+                y: lista_inflados,
+                customdata: lista_customdata,
+                mode: "lines+markers",
+                type: "scatter",
+                marker: { color: 'red', size: 10 },
+                name: 'Costo ajustado (2026)',
+                hovertemplate: `
+                    <b>%{customdata[0]}</b><br>
+                    <img src="%{customdata[4]}" style="width:80px;"><br>
+                    Ajustado: %{y} M€<br>
+                    %{customdata[1]} → %{customdata[2]}
+                    <extra></extra>
+                `
+            };
+    
+            // -------- LAYOUT --------
+            const forma = {
+                yaxis: {
+                    title: { text: 'Millones de €' },
+                    gridcolor: '#333',
+                    color: 'lightgray'
+                },
+                xaxis: {
+                    title: { text: 'Año' },
+                    color: 'lightgray'
+                },
+                plot_bgcolor: 'black',
+                paper_bgcolor: 'black',
+                annotations: lista_etiquetas,
+                hoverlabel: {
+                    bgcolor: "#111",
+                    bordercolor: "white",
+                    font: { color: "white", family: "Roboto" }
+                },
+                legend: {
+                    orientation: 'h',
+                    font: { color: 'white' }
+                }
+            };
+    
+            Plotly.newPlot(
+                'grafico-fichajes',
+                [datos_records, datos_inflados],
+                forma,
+                { staticPlot: false } // IMPORTANTE para interacción
+            );
+        }
+    
+        grafico_fichajes();
+    </script>
 
 
     </body>
