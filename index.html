@@ -1,141 +1,176 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Inflación de Fichajes</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-    <style>
-        body { margin: 0; padding: 0; background: #000000; font-family: "Roboto", sans-serif; overflow-x: hidden; }
-        .header { padding: 20px; text-align: center; background: #1d1d1d; color: white; }
+    <head>
+        <meta charset="UTF-8">
+
+        <title>Inflación de Fichajes</title>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
         
-        /* Estilo de la Tarjeta Flotante */
-        #hover-card {
-            position: absolute;
-            display: none; /* Escondida por defecto */
-            pointer-events: none; /* Para que no interfiera con el mouse */
-            background: rgba(26, 26, 26, 0.95);
-            border: 1px solid #444;
-            border-radius: 8px;
-            color: white;
-            padding: 12px;
-            width: 150px;
-            text-align: center;
-            z-index: 1000;
-            box-shadow: 0px 4px 15px rgba(0,0,0,0.5);
-        }
-        #hover-card img {
-            width: 80px; height: 80px;
-            border-radius: 50%;
-            border: 2px solid #3b82f6;
-            margin-bottom: 8px;
-            object-fit: cover;
-        }
-    </style>
-</head>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-<body>
-    <div class="header">
-        <h1>Inflación del Mercado de Fichajes</h1>
-        <div>Historia del récord de fichaje (1956 - 2017) ajustado a abril de 2026.</div>
-    </div>
+        <style>
+            body{
+                margin: 0;
+                padding: 0;
+                background: #000000;
+            }
 
-    <div id="grafico-fichajes" style="width: 100%; height: 550px;"></div>
+            .header {
+                padding: 1px;
+                text-align: center;
+                background: #1d1d1d;
+                color: white;
+                font-family: "Roboto", sans-serif;
+            }
 
-    <div id="hover-card"></div>
+        </style>
 
-    <script>
-        async function grafico_fichajes() {
-            const respuesta = await fetch('./datos-fichajes.json');
-            const datosOriginales = await respuesta.json();
-            const datos = datosOriginales.reverse(); // Invertir para orden cronológico
 
-            const lista_fechas = datos.map(t => t.fecha_fichaje.split("/")[2]);
-            // Ajustes manuales para años repetidos
-            lista_fechas[10] = '1997 (A)'; lista_fechas[11] = '1997 (R)';
-            lista_fechas[14] = '2000 (C)'; lista_fechas[15] = '2000 (F)';
 
-            const lista_records = datos.map(t => parseFloat(t.coste));
-            const lista_inflados = datos.map(t => parseFloat(t.precio_ajustado));
-            const lista_nombres = datos.map(t => t.jugador);
 
-            // 1. Configuramos los datos del gráfico (Sin HTML en el 'text')
-            const trace_records = {
-                x: lista_fechas, y: lista_records,
-                mode: "lines+markers", name: 'Costo Original',
-                marker: { color: 'blue', size: 10 },
-                hoverinfo: 'none' // Desactivamos el hover de Plotly para usar el nuestro
+    </head>
+
+    <body>
+        <div class="header">
+                <h1 style="font-family: 'Roboto', sans-serif">Inflación del Mercado de Fichajes</h1>
+                <div style="font-family: 'Roboto', sans-serif">La historia del récord de fichaje más caro en el fútbol (1956 - 2017), medido en millones de euros, con su ajuste a la inflación para la actualidad (abril de 2026).</div>
+        </div>
+
+
+        <div id="grafico-fichajes" style="width: 100%;height: 520px;padding: 0px"></div>
+        <script>
+            async function grafico_fichajes() {
+                const llamado_datos = await fetch('./datos-fichajes.json');
+                const datos = await llamado_datos.json();
+
+                const lista_fechas = (datos.map(tupla => (tupla['fecha_fichaje'].split("/"))[2])).reverse();
+
+                lista_fechas[10] = '1997 (A)';
+                lista_fechas[11] = '1997 (R)';
+                lista_fechas[14] = '2000 (C)';
+                lista_fechas[15] = '2000 (F)';
+
+                const lista_records = (datos.map(tupla => parseFloat(tupla['coste']))).reverse();
+                const lista_inflados = (datos.map(tupla => parseFloat(tupla['precio_ajustado']))).reverse();
+
+
+                const lista_nombres = (datos.map(tupla => tupla['jugador'])).reverse();
+                const lista_etiquetas = [];
+
+                for (let i=0; i<21; i++){
+                    lista_etiquetas.push(
+                        {
+                            x: i,
+                            y: lista_inflados[i]+40,
+                            textangle: -90,
+                            xref: 'x',
+                            yref: 'y',
+                            text: lista_nombres[i],
+                            showarrow: false,
+                            font: {
+                                family: 'Roboto',
+                                color: 'white'
+                            },
+                            bgcolor: '#000000'
+                        }
+                    );
+                };
+
+                lista_etiquetas.push(
+                    {
+                        x: 10.5,
+                        y: 140,
+                        xref: 'x',
+                        yref: 'y',
+                        text: "El fichaje de Ronaldo batió rápidamente el <br>otro récord establecido en julio de 1997.",
+                        showarrow: false,
+                        font: {
+                            family: 'Roboto',
+                            color: 'white',
+                            size: 12
+                        },
+                        bgcolor: '#1f1f1f',
+                        bordercolor: 'white'
+                    },
+                    {
+                        x: 14.5,
+                        y: 180,
+                        xref: 'x',
+                        yref: 'y',
+                        text: "El costo del fichaje de Figo superó a <br>aquel de Crespo el mismo año.",
+                        showarrow: false,
+                        font: {
+                            family: 'Roboto',
+                            color: 'white',
+                            size: 12
+                        },
+                        bgcolor: '#1f1f1f',
+                        bordercolor: 'white'
+                    }
+                );
+
+                const datos_records = {
+                    x: lista_fechas,
+                    y: lista_records,
+                    mode: "lines+markers",
+                    type: "scatter",
+                    marker: {color: 'blue', symbol: 'circle', size: 10},
+                    name: 'Costo en M€ según valor de € en fecha de récord',
+                    line: {
+                        shape: 'linear'
+                    }
+                };
+
+                const datos_inflados = {
+                    x: lista_fechas,
+                    y: lista_inflados,
+                    mode: "lines+markers",
+                    type: "scatter",
+                    marker: {color: 'red', symbol: 'diamond', size: 10},
+                    name: 'Costo en M€ según el valor de € hoy',
+                    line: {
+                        shape: 'linear'
+                    }
+                };
+                
+                const forma = {
+                    yaxis: {title: {text: 'Costo en millones de euros (€)'}, showgrid: true, rangemode: 'nonnegative', gridcolor: '#333333', dtick: 50, color: 'lightgray'},
+                    xaxis: {title: {text: 'Año de cada nuevo récord'}, showgrid: false, dtick: "M12", range: ['1955-01-01', '2018-01-01'], type: 'category', color: 'lightgray'},
+                    plot_bgcolor: 'black',
+                    paper_bgcolor: 'black',
+                    annotations: lista_etiquetas,
+                    margin: {
+                        l: 60,
+                        r: 10,
+                        b: 40,
+                        t: 10
+                    },
+                    legend: {
+                        orientation: 'h',
+                        yanchor: 'bottom',
+                        font: {
+                            color: 'white'
+                        }
+                    }
+                };
+
+
+                lista_etiquetas[1]['y'] = 100;
+                lista_etiquetas[3]['y'] = 60;
+                lista_etiquetas[5]['y'] = 70;
+                lista_etiquetas[12]['y'] = 100;
+
+                Plotly.newPlot('grafico-fichajes', [datos_records, datos_inflados], forma, {staticPlot: 'true'});
             };
 
-            const trace_inflados = {
-                x: lista_fechas, y: lista_inflados,
-                mode: "lines+markers", name: 'Costo Ajustado',
-                marker: { color: 'red', symbol: 'diamond', size: 10 },
-                hoverinfo: 'none'
-            };
+            grafico_fichajes();
 
-            // 2. Anotaciones de nombres (las que ya tenías)
-            const etiquetas = lista_nombres.map((nom, i) => ({
-                x: i, y: lista_inflados[i] + 35,
-                text: nom, textangle: -90, showarrow: false,
-                font: { color: 'white', size: 9 }, bgcolor: 'black', xref: 'x', yref: 'y'
-            }));
+        </script>
 
-            const layout = {
-                plot_bgcolor: 'black', paper_bgcolor: 'black',
-                margin: { l: 60, r: 20, b: 60, t: 20 },
-                xaxis: { type: 'category', color: 'gray' },
-                yaxis: { title: 'Millones de Euros (€)', color: 'gray', gridcolor: '#333' },
-                annotations: etiquetas,
-                showlegend: true,
-                legend: { orientation: 'h', x: 0.5, xanchor: 'center', font: { color: 'white' } }
-            };
 
-            const divGrafico = document.getElementById('grafico-fichajes');
-            const card = document.getElementById('hover-card');
-
-            Plotly.newPlot(divGrafico, [trace_records, trace_inflados], layout, { displayModeBar: false });
-
-            // 3. LÓGICA DEL HOVER PERSONALIZADO
-            divGrafico.on('plotly_hover', function(data) {
-                const punto = data.points[0];
-                const index = punto.pointIndex;
-                const jugador = datos[index];
-
-                // Determinar imagen
-                let nombre = jugador.jugador;
-                let ext = ".webp";
-                let arch = nombre.includes("Raul Conti") ? "conti" : 
-                           (nombre.includes("Cristiano") ? "cristiano" : 
-                           (nombre.includes("Nazário") ? "ronaldo" : 
-                            nombre.split(" ").pop().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")));
-                if(arch === "conti") ext = ".jpg";
-
-                // Llenar la tarjeta
-                card.innerHTML = `
-                    <img src="img/${arch}${ext}" onerror="this.src='img/placeholder.png'">
-                    <div style="font-weight:bold; font-size:14px;">${nombre}</div>
-                    <div style="font-size:11px; color:#aaa; margin:4px 0;">${jugador.ultimo_club} → ${jugador.nuevo_club}</div>
-                    <div style="color:#ff4d4d; font-weight:bold;">${jugador.coste} M€</div>
-                `;
-
-                // Posicionar la tarjeta cerca del mouse
-                const ev = window.event;
-                card.style.display = 'block';
-                card.style.left = (ev.pageX + 15) + 'px';
-                card.style.top = (ev.pageY - 50) + 'px';
-            });
-
-            // Esconder la tarjeta al salir del punto
-            divGrafico.on('plotly_unhover', function() {
-                card.style.display = 'none';
-            });
-        }
-
-        grafico_fichajes();
-    </script>
-</body>
+    </body>
 </html>
