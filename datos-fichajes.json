@@ -10,7 +10,8 @@
     "nuevo_club": "PSG",
     "liga_destino": "Ligue 1",
     "coste": "222",
-    "precio_ajustado": "260"
+    "precio_ajustado": "260",
+    "contexto": "El PSG ejecutó la cláusula de rescisión más alta de la historia, rompiendo por completo el mercado europeo y marcando el inicio de la era de los clubes-estado."
   },
   {
     "jugador": "Paul Pogba",
@@ -23,7 +24,8 @@
     "nuevo_club": "Manchester Utd.",
     "liga_destino": "Premier League",
     "coste": "105",
-    "precio_ajustado": "126"
+    "precio_ajustado": "126",
+    "contexto": "El Manchester United pagó una cifra récord para traer de vuelta al mediocampante francés que se había marchado gratis a Italia cuatro años antes."
   },
   {
     "jugador": "Gareth Bale",
@@ -36,7 +38,8 @@
     "nuevo_club": "Real Madrid",
     "liga_destino": "LaLiga",
     "coste": "101",
-    "precio_ajustado": "127"
+    "precio_ajustado": "127",
+    "contexto": "Su llegada al Real Madrid marcó un hito financiero al romper la barrera simbólica de los 100 millones de euros, formando parte de la delantera conocida como la "BBC"."
   },
   {
     "jugador": "Cristiano Ronaldo",
@@ -49,7 +52,8 @@
     "nuevo_club": "Real Madrid",
     "liga_destino": "LaLiga",
     "coste": "94",
-    "precio_ajustado": "128"
+    "precio_ajustado": "128",
+    "contexto": "Tras ganar todo con el United, CR7 llegó al Bernabéu como el fichaje estrella de la segunda era de "Galácticos" de Florentino Pérez."
   },
   {
     "jugador": "Zinedine Zidane",
@@ -62,7 +66,8 @@
     "nuevo_club": "Real Madrid",
     "liga_destino": "LaLiga",
     "coste": "77.5",
-    "precio_ajustado": "122.5"
+    "precio_ajustado": "122.5",
+    "contexto": "El Madrid pagó una fortuna a la Juventus por "Zizou", quien devolvió la inversión anotando el gol de la Novena Champions en su primer año."
   },
   {
     "jugador": "Luís Figo",
@@ -75,7 +80,8 @@
     "nuevo_club": "Real Madrid",
     "liga_destino": "LaLiga",
     "coste": "60",
-    "precio_ajustado": "98"
+    "precio_ajustado": "98",
+    "contexto": "El traspaso más polémico de la historia; el capitán del Barcelona pasó al eterno rival tras el pago de su cláusula de rescisión."
   },
   {
     "jugador": "Hernán Crespo",
@@ -88,7 +94,8 @@
     "nuevo_club": "Lazio",
     "liga_destino": "Serie A",
     "coste": "56.81",
-    "precio_ajustado": "90"
+    "precio_ajustado": "90",
+    "contexto": "La Lazio rompió récords para fichar al goleador argentino del Parma, en una época donde la Serie A dominaba económicamente el mundo."
   },
   {
     "jugador": "Christian Vieri",
@@ -101,7 +108,8 @@
     "nuevo_club": "Inter",
     "liga_destino": "Serie A",
     "coste": "46.48",
-    "precio_ajustado": "75"
+    "precio_ajustado": "75",
+    "contexto": "El Inter de Milán pagó una cifra récord a la Lazio para hacerse con uno de los delanteros más potentes de la época, en un mercado italiano que lideraba las inversiones mundiales."
   },
   {
     "jugador": "Denílson de Oliveira",
@@ -114,7 +122,8 @@
     "nuevo_club": "Real Betis",
     "liga_destino": "LaLiga",
     "coste": "30",
-    "precio_ajustado": "54.8"
+    "precio_ajustado": "54.8",
+    "contexto": "El Real Betis sorprendió al mercado internacional al fichar a la joven promesa brasileña del São Paulo, convirtiéndolo en el traspaso más caro del mundo hasta ese momento."
   },
   {
     "jugador": "Ronaldo Nazário",
@@ -127,7 +136,8 @@
     "nuevo_club": "Inter",
     "liga_destino": "Serie A",
     "coste": "26.5",
-    "precio_ajustado": "50.2"
+    "precio_ajustado": "50.2",
+    "contexto": "Tras una temporada irrepetible en Barcelona, el Inter pagó la cláusula para llevarse al "Fenómeno" a la liga más difícil del mundo."
   },
   {
     "jugador": "Sonny Anderson",
@@ -140,7 +150,8 @@
     "nuevo_club": "FC Barcelona",
     "liga_destino": "LaLiga",
     "coste": "26.25",
-    "precio_ajustado": "49.8"
+    "precio_ajustado": "49.8",
+    "contexto": "Tras una gran etapa en el Mónaco, llegó al Barcelona en un mercado convulso tras la salida de Ronaldo, siendo una de las inversiones más altas del club catalán en la década."
   },
   {
     "jugador": "Gianluca Vialli",
@@ -153,7 +164,8 @@
     "nuevo_club": "Juventus",
     "liga_destino": "Serie A",
     "coste": "20.6",
-    "precio_ajustado": "39"
+    "precio_ajustado": "39",
+    "contexto": "Su traspaso de la Sampdoria a la Juventus por una cifra récord subrayó la ambición del club turinés por volver a dominar la Serie A y las competiciones continentales."
   },
   {
     "jugador": "Roberto Baggio",
@@ -166,7 +178,8 @@
     "nuevo_club": "Juventus",
     "liga_destino": "Serie A",
     "coste": "12.9",
-    "precio_ajustado": "34.8"
+    "precio_ajustado": "34.8",
+    "contexto": "Su traspaso a la Juventus provocó disturbios en las calles de Florencia, confirmando al "Codino" como el jugador italiano más deseado."
   },
   {
     "jugador": "Lajos Détári",
@@ -179,7 +192,8 @@
     "nuevo_club": "Olympiacos",
     "liga_destino": "A' Ethniki",
     "coste": "8.7",
-    "precio_ajustado": "23.5"
+    "precio_ajustado": "23.5",
+    "contexto": "El mediocampista húngaro protagonizó un fichaje histórico para el Olympiacos, siendo una de las transferencias más costosas y mediáticas en la historia del fútbol griego."
   },
   {
     "jugador": "Enzo Scifo",
@@ -192,7 +206,8 @@
     "nuevo_club": "Inter",
     "liga_destino": "Serie A",
     "coste": "8.65",
-    "precio_ajustado": "23"
+    "precio_ajustado": "23",
+    "contexto": "Considerado el mayor talento belga de su generación, el Inter de Milán realizó una inversión considerable para asegurar su fichaje tras su consolidación en el Anderlecht."
   },
   {
     "jugador": "Roberto Donadoni",
@@ -205,7 +220,8 @@
     "nuevo_club": "Milan",
     "liga_destino": "Serie A",
     "coste": "8",
-    "precio_ajustado": "22"
+    "precio_ajustado": "22",
+    "contexto": "Fue una de las incorporaciones clave en el inicio de la gestión de Silvio Berlusconi en el Milan, convirtiéndose en pilar del equipo que marcaría una época años después."
   },
   {
     "jugador": "Diego Maradona",
@@ -218,7 +234,8 @@
     "nuevo_club": "FC Barcelona",
     "liga_destino": "LaLiga",
     "coste": "7.3",
-    "precio_ajustado": "27"
+    "precio_ajustado": "27",
+    "contexto": "El FC Barcelona concretó su fichaje tras el Mundial de España, pagando una cifra récord a Argentinos Juniors por el jugador con mayor proyección del planeta."
   },
   {
     "jugador": "Diego Maradona",
@@ -231,7 +248,8 @@
     "nuevo_club": "Boca Juniors",
     "liga_destino": "Argentina",
     "coste": "3.8",
-    "precio_ajustado": "14"
+    "precio_ajustado": "14",
+    "contexto": "Su traspaso de Argentinos Juniors a Boca Juniors fue un hito social y económico en Argentina, siendo el pase más caro entre clubes locales."
   },
   {
     "jugador": "Andy Gray",
@@ -244,7 +262,8 @@
     "nuevo_club": "Wolverhampton",
     "liga_destino": "First Division (_ 91/92)",
     "coste": "3",
-    "precio_ajustado": "21.5"
+    "precio_ajustado": "21.5",
+    "contexto": "El Wolverhampton rompió el mercado británico al pagar un millón y medio de libras por el delantero escocés del Aston Villa."
   },
   {
     "jugador": "Paolo Rossi",
@@ -257,7 +276,8 @@
     "nuevo_club": "Vicenza",
     "liga_destino": "Serie A",
     "coste": "2.65",
-    "precio_ajustado": "20"
+    "precio_ajustado": "20",
+    "contexto": "Una operación de copropiedad récord entre el Vicenza y la Juventus que escandalizó a Italia por las cifras manejadas en plena crisis."
   },
   {
     "jugador": "Raul Conti",
@@ -270,6 +290,7 @@
     "nuevo_club": "Juventus",
     "liga_destino": "Serie A",
     "coste": "2.44",
-    "precio_ajustado": "65"
+    "precio_ajustado": "65",
+    "contexto": "El talentoso delantero argentino llegó a la Juventus desde el Mónaco, siendo uno de los primeros grandes pases transatlánticos de la posguerra."
   }
 ]
