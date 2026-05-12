@@ -65,6 +65,7 @@
         .precio { font-size: 1.8em; color: #ff4d4d; font-weight: 900; }
         .precio-original { font-size: 1.2em; color: #3b82f6; /* Azul para el costo original */margin-top: 10px; }
         .label-precio { font-size: 0.6em; color: #666; display: block; text-transform: uppercase; }
+        .contexto { font-size: 0.85em; color: #cccccc; margin-top: 20px; line-height: 1.4; border-top: 1px solid #333; padding-top: 15px; text-align: justify; }
     </style>
 </head>
 
@@ -84,6 +85,7 @@
                 <div id="info-clubes" class="clubes"></div>
                 <div id="info-precio-original" class="precio-original"></div>
                 <div id="info-precio" class="precio"></div>
+                <div id="info-contexto" class="contexto"></div>
             </div>
         </div>
     </div>
@@ -173,6 +175,7 @@
                 // Mostramos ambos precios
                 document.getElementById('info-precio-original').innerHTML = `<span class="label-precio">Costo Original</span> ${j.coste} M€`;
                 document.getElementById('info-precio').innerHTML = `<span class="label-precio">Ajustado a Hoy</span> ${j.precio_ajustado} M€`;
+                document.getElementById('info-contexto').innerText = j.contexto || "";
             
                 // Lógica de fotos con excepciones manuales
                 let archivoFoto = "";
