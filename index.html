@@ -63,6 +63,8 @@
         .nombre { font-size: 1.5em; font-weight: bold; margin-bottom: 5px; }
         .clubes { color: #aaa; font-style: italic; margin-bottom: 15px; }
         .precio { font-size: 1.8em; color: #ff4d4d; font-weight: 900; }
+        .precio-original { font-size: 1.2em; color: #3b82f6; /* Azul para el costo original */margin-top: 10px; }
+        .label-precio { font-size: 0.6em; color: #666; display: block; text-transform: uppercase; }
     </style>
 </head>
 
@@ -80,6 +82,7 @@
             <div class="texto-info">
                 <div id="info-nombre" class="nombre"></div>
                 <div id="info-clubes" class="clubes"></div>
+                <div id="info-precio-original" class="precio-original"></div>
                 <div id="info-precio" class="precio"></div>
             </div>
         </div>
@@ -157,26 +160,44 @@
             // IMPORTANTE: Quitamos staticPlot: true para habilitar el hover
             Plotly.newPlot(graficoDiv, [datos_records, datos_inflados], forma, { displayModeBar: false });
 
-            // Lógica de Interacción 
-            
+            // --- Lógica de Interacción ---
             graficoDiv.on('plotly_hover', function(data) {
                 const punto = data.points[0].pointIndex;
                 const j = datos[punto];
+                const nombreLimpio = j.jugador.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
                 
                 document.getElementById('panel-info').style.opacity = 1;
                 document.getElementById('info-nombre').innerText = j.jugador;
                 document.getElementById('info-clubes').innerText = `${j.ultimo_club} ➜ ${j.nuevo_club}`;
-                document.getElementById('info-precio').innerText = `${j.precio_ajustado} M€`;
-
-                // Procesamos el nombre para la imagen (ej: "Zidane")
-                const apellido = j.jugador.split(" ").pop().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                document.getElementById('foto-jugador').style.backgroundImage = `url('img/${apellido}.webp')`;
+                
+                // Mostramos ambos precios
+                document.getElementById('info-precio-original').innerHTML = `<span class="label-precio">Costo Original</span> ${j.coste} M€`;
+                document.getElementById('info-precio').innerHTML = `<span class="label-precio">Ajustado a Hoy</span> ${j.precio_ajustado} M€`;
+            
+                // Lógica de fotos con excepciones manuales
+                let archivoFoto = "";
+                
+                if (nombreLimpio.includes("conti")) {
+                    archivoFoto = "conti.jpg";
+                } else if (nombreLimpio.includes("nazario")) {
+                    archivoFoto = "ronaldo.webp";
+                } else if (nombreLimpio.includes("cristiano")) {
+                    archivoFoto = "cristiano.webp";
+                } else if (nombreLimpio.includes("denilson")) {
+                    archivoFoto = "denilson.webp";
+                } else if (nombreLimpio.includes("neymar")) {
+                    archivoFoto = "neymar.webp";
+                } else {
+                    const apellido = nombreLimpio.split(" ").pop();
+                    archivoFoto = `${apellido}.webp`;
+                }
+            
+                document.getElementById('foto-jugador').style.backgroundImage = `url('img/${archivoFoto}')`;
             });
-
+            
             graficoDiv.on('plotly_unhover', function() {
                 document.getElementById('panel-info').style.opacity = 0;
             });
-        };
 
         grafico_fichajes();
     </script>
