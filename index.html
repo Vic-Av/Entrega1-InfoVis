@@ -44,101 +44,106 @@
         <div id="grafico-fichajes" style="width: 100%;height: 520px;padding: 0px"></div>
         <script>
             async function grafico_fichajes() {
-                const llamado_datos = await fetch('./datos-fichajes.json');
-                const datos = await llamado_datos.json();
-            
+                    const llamado_datos = await fetch('./datos-fichajes.json');
+                    const datos = await llamado_datos.json();
+                    
+                    // Invertimos una sola vez para mantener consistencia
+                    const datosOrdenados = datos.reverse();
                 
-                const datosOrdenados = datos.reverse();
-            
-                const lista_fechas = datosOrdenados.map(t => t.fecha_fichaje.split("/")[2]);
+                    const lista_fechas = datosOrdenados.map(t => t.fecha_fichaje.split("/")[2]);
+                    
+                    // Correcciones manuales para años duplicados
+                    lista_fechas[10] = '1997 (A)';
+                    lista_fechas[11] = '1997 (R)';
+                    lista_fechas[14] = '2000 (C)';
+                    lista_fechas[15] = '2000 (F)';
                 
-                lista_fechas[10] = '1997 (A)';
-                lista_fechas[11] = '1997 (R)';
-                lista_fechas[14] = '2000 (C)';
-                lista_fechas[15] = '2000 (F)';
-            
-                const lista_records = datosOrdenados.map(t => parseFloat(t.coste));
-                const lista_inflados = datosOrdenados.map(t => parseFloat(t.precio_ajustado));
-                const lista_nombres = datosOrdenados.map(t => t.jugador);
-            
+                    const lista_records = datosOrdenados.map(t => parseFloat(t.coste));
+                    const lista_inflados = datosOrdenados.map(t => parseFloat(t.precio_ajustado));
+                    const lista_nombres = datosOrdenados.map(t => t.jugador);
                 
-                const lista_hovers = datosOrdenados.map(t => {
-                    let nombre = t.jugador;
-                    let extension = ".webp";
-                    let archivo = "";
-            
-                   
-                    if (nombre.includes("Cristiano Ronaldo")) { archivo = "cristiano"; }
-                    else if (nombre.includes("Ronaldo Nazário")) { archivo = "ronaldo"; }
-                    else if (nombre.includes("Raul Conti")) { archivo = "conti"; extension = ".jpg"; }
-                    else {
-                        
-                        archivo = nombre.split(" ").pop().toLowerCase()
-                                  .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                    }
-            
-                    return `
-                        <div style="text-align:center; font-family:'Roboto'; padding:10px;">
-                            <img src="img/${archivo}${extension}" style="width:80px; height:80px; border-radius:50%; margin-bottom:5px;">
-                            <br>
-                            <b>${nombre}</b><br>
-                            <span>${t.ultimo_club} &#10132; ${t.nuevo_club}</span><br>
-                            <b style="color:red;">${t.coste} M€</b>
-                        </div>
-                    `;
-                });
-            
-                const lista_etiquetas = [];
-                for (let i = 0; i < 21; i++) {
-                    lista_etiquetas.push({
-                        x: i,
-                        y: lista_inflados[i] + 40,
-                        textangle: -90,
-                        xref: 'x', yref: 'y',
-                        text: lista_nombres[i],
-                        showarrow: false,
-                        font: { family: 'Roboto', color: 'white' },
-                        bgcolor: '#000000'
+                    // Generación del HTML para el hover
+                    const lista_hovers = datosOrdenados.map(t => {
+                        let nombre = t.jugador;
+                        let extension = ".webp";
+                        let archivo = "";
+                
+                        if (nombre.includes("Cristiano Ronaldo")) { archivo = "cristiano"; }
+                        else if (nombre.includes("Ronaldo Nazário")) { archivo = "ronaldo"; }
+                        else if (nombre.includes("Raul Conti")) { archivo = "conti"; extension = ".jpg"; }
+                        else {
+                            archivo = nombre.split(" ").pop().toLowerCase()
+                                      .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                        }
+                
+                        // El contenedor tiene un ancho fijo para evitar que se vea como una "barra" larga
+                        return `<div style="width:120px; text-align:center; font-family:'Roboto'; color: white;">
+                                    <img src="img/${archivo}${extension}" style="width:70px; height:70px; border-radius:50%; border: 2px solid white;">
+                                    <br><b>${nombre}</b><br>
+                                    <span style="font-size:10px;">${t.ultimo_club} → ${t.nuevo_club}</span><br>
+                                    <b style="color:#ff4d4d;">${t.coste} M€</b>
+                                </div>`;
                     });
-                }
-            
                 
-                const datos_records = {
-                    x: lista_fechas,
-                    y: lista_records,
-                    mode: "lines+markers",
-                    type: "scatter",
-                    marker: { color: 'blue', symbol: 'circle', size: 10 },
-                    name: 'Costo Original',
-                    hoverinfo: 'none' 
-                };
-            
-                const datos_inflados = {
-                    x: lista_fechas,
-                    y: lista_inflados,
-                    mode: "lines+markers",
-                    type: "scatter",
-                    marker: { color: 'red', symbol: 'diamond', size: 10 },
-                    name: 'Costo Ajustado',
-                    text: lista_hovers, 
-                    hoverinfo: 'text' 
-                };
-            
-                const forma = {
-                    hovermode: 'closest',
-                    yaxis: { title: { text: 'Costo en millones de euros (€)' }, showgrid: true, gridcolor: '#333333', color: 'lightgray' },
-                    xaxis: { title: { text: 'Año del Récord' }, showgrid: false, type: 'category', color: 'lightgray' },
-                    plot_bgcolor: 'black',
-                    paper_bgcolor: 'black',
-                    annotations: lista_etiquetas,
-                    legend: { orientation: 'h', font: { color: 'white' } },
-                    margin: { l: 60, r: 10, b: 40, t: 10 }
-                };
-            
-                Plotly.newPlot('grafico-fichajes', [datos_records, datos_inflados], forma, { staticPlot: false });
-            }
-            
-            grafico_fichajes();
+                    const lista_etiquetas = [];
+                    for (let i = 0; i < 21; i++) {
+                        lista_etiquetas.push({
+                            x: i,
+                            y: lista_inflados[i] + 40,
+                            textangle: -90,
+                            xref: 'x', yref: 'y',
+                            text: lista_nombres[i],
+                            showarrow: false,
+                            font: { family: 'Roboto', color: 'white', size: 10 },
+                            bgcolor: 'rgba(0,0,0,0.5)'
+                        });
+                    }
+                
+                    const datos_records = {
+                        x: lista_fechas,
+                        y: lista_records,
+                        mode: "lines+markers",
+                        type: "scatter",
+                        marker: { color: 'blue', symbol: 'circle', size: 10 },
+                        name: 'Costo Original',
+                        text: lista_hovers,
+                        hoverinfo: 'text',
+                        hoverlabel: { bgcolor: '#1a1a1a', namelength: 0 } // namelength: 0 quita el código de texto extra
+                    };
+                
+                    const datos_inflados = {
+                        x: lista_fechas,
+                        y: lista_inflados,
+                        mode: "lines+markers",
+                        type: "scatter",
+                        marker: { color: 'red', symbol: 'diamond', size: 10 },
+                        name: 'Costo Ajustado',
+                        text: lista_hovers, 
+                        hoverinfo: 'text',
+                        hoverlabel: { bgcolor: '#1a1a1a', namelength: 0 }
+                    };
+                
+                    const forma = {
+                        hovermode: 'closest',
+                        yaxis: { title: { text: 'Millones de Euros (€)' }, showgrid: true, gridcolor: '#333333', color: 'lightgray' },
+                        xaxis: { title: { text: 'Año del Récord' }, showgrid: false, type: 'category', color: 'lightgray' },
+                        plot_bgcolor: 'black',
+                        paper_bgcolor: 'black',
+                        annotations: lista_etiquetas,
+                        legend: { orientation: 'h', font: { color: 'white', size: 10 }, y: -0.2 },
+                        margin: { l: 60, r: 20, b: 80, t: 20 }
+                    };
+                
+                    // Configuración para ocultar la barra de herramientas (modebar)
+                    const configuracion = {
+                        displayModeBar: false,
+                        responsive: true
+                    };
+                
+                    Plotly.newPlot('grafico-fichajes', [datos_records, datos_inflados], forma, configuracion);
+                }
+                
+                grafico_fichajes();
 
         </script>
 
