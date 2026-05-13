@@ -127,7 +127,6 @@
             const lista_fechas = datos.map(dato => dato.x_grafico);
             const lista_records = datos.map(dato => parseFloat(dato.coste));
             const lista_inflados = datos.map(dato => parseFloat(dato.precio_ajustado));
-            const lineas_grilla = crearLineasGrilla(lista_records, lista_inflados);
 
             let sonidoActivo = false;
             let sintetizador = null;
@@ -197,7 +196,10 @@
                 yaxis: {
                     title: 'Millones de Euros (€)',
                     color: 'lightgray',
-                    showgrid: false,
+                    showgrid: true,
+                    gridcolor: 'rgba(255,255,255,0.14)',
+                    gridwidth: 1,
+                    dtick: 50,
                     zeroline: false
                 },
                 xaxis: {
@@ -210,7 +212,6 @@
                 },
                 plot_bgcolor: 'black',
                 paper_bgcolor: 'black',
-                shapes: lineas_grilla,
                 margin: { l: 60, r: 10, b: 40, t: 30 },
                 legend: { orientation: 'h', font: { color: 'white' }, y: -0.2 }
             };
@@ -312,32 +313,6 @@
                     }
                 }
             }
-        }
-
-        function crearLineasGrilla(lista_records, lista_inflados) {
-            const maximo = Math.max(...lista_records, ...lista_inflados);
-            const limite = Math.ceil(maximo / 50) * 50;
-            const lineas = [];
-
-            for (let i = 1; i <= 4; i++) {
-                const valor = limite * i / 5;
-
-                lineas.push({
-                    type: 'line',
-                    xref: 'paper',
-                    x0: 0,
-                    x1: 1,
-                    yref: 'y',
-                    y0: valor,
-                    y1: valor,
-                    line: {
-                        color: 'rgba(255,255,255,0.14)',
-                        width: 1
-                    }
-                });
-            }
-
-            return lineas;
         }
 
         function actualizarPanel(jugador) {
