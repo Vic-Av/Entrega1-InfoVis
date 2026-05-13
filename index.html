@@ -165,7 +165,12 @@
                 y: lista_records,
                 mode: 'lines+markers',
                 line: { color: 'blue', width: 2, shape: 'linear' },
-                marker: { color: 'blue', size: 10 },
+                marker: {
+                    color: 'blue',
+                    size: 7,
+                    opacity: 0.95,
+                    line: { color: 'white', width: 1 }
+                },
                 name: 'Costo Original',
                 hoverinfo: 'skip'
             };
@@ -178,10 +183,11 @@
                 marker: {
                     color: 'red',
                     symbol: 'diamond',
-                    size: datos.map(() => 10),
+                    size: datos.map(() => 9),
+                    opacity: 0.95,
                     line: {
-                        color: datos.map(() => 'red'),
-                        width: datos.map(() => 0)
+                        color: datos.map(() => 'white'),
+                        width: datos.map(() => 1)
                     }
                 },
                 name: 'Costo Ajustado (Abril 2026)',
@@ -293,12 +299,16 @@
             for (const anio in grupos) {
                 const grupo = grupos[anio];
                 const cantidad = grupo.length;
+                const anioNumero = parseInt(anio);
 
                 if (cantidad === 1) {
-                    grupo[0].x_grafico = parseInt(anio);
+                    grupo[0].x_grafico = anioNumero;
                 } else {
+                    const separacion = 0.65;
+                    const inicio = anioNumero - ((cantidad - 1) * separacion) / 2;
+
                     for (let i = 0; i < cantidad; i++) {
-                        grupo[i].x_grafico = parseInt(anio) + 0.10 + (i * 0.80 / (cantidad - 1));
+                        grupo[i].x_grafico = inicio + i * separacion;
                     }
                 }
             }
@@ -316,7 +326,6 @@
             document.getElementById('info-contexto').innerText = jugador.contexto || '';
 
             let archivoFoto = '';
-
             <!-- con estos tuve problems asi q los deje harcodeados no mas -->
             if (nombreLimpio.includes('conti')) {
                 archivoFoto = 'conti.jpg';
@@ -345,13 +354,13 @@
 
             for (let i = 0; i < datos.length; i++) {
                 if (i === indice) {
-                    tamanos.push(18);
-                    anchosBorde.push(4);
+                    tamanos.push(15);
+                    anchosBorde.push(3);
                     coloresBorde.push('white');
                 } else {
-                    tamanos.push(10);
-                    anchosBorde.push(0);
-                    coloresBorde.push('red');
+                    tamanos.push(9);
+                    anchosBorde.push(1);
+                    coloresBorde.push('white');
                 }
             }
 
@@ -363,9 +372,9 @@
         }
 
         function quitarIluminacion(graficoDiv, datos) {
-            const tamanos = datos.map(() => 10);
-            const anchosBorde = datos.map(() => 0);
-            const coloresBorde = datos.map(() => 'red');
+            const tamanos = datos.map(() => 9);
+            const anchosBorde = datos.map(() => 1);
+            const coloresBorde = datos.map(() => 'white');
 
             Plotly.restyle(graficoDiv, {
                 'marker.size': [tamanos],
@@ -402,7 +411,6 @@
             sintetizador.triggerAttackRelease(notaOriginal, '16n', ahora);
             sintetizador.triggerAttackRelease(notaAjustada, '8n', ahora + 0.18);
         }
-
         <!-- para poder mantener consistencia entre las notas. hice la func solo x si en un futuro ponemos mas datos -->
         function escalar(valor, minEntrada, maxEntrada, minSalida, maxSalida) {
             return minSalida + ((valor - minEntrada) / (maxEntrada - minEntrada)) * (maxSalida - minSalida);
@@ -412,3 +420,4 @@
 </body>
 
 </html>
+
