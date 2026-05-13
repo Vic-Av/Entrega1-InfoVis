@@ -4,17 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Inflación de Fichajes</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
 
+    <!-- podriamos considerar hacer un archivo css, ya el style es bastante grande -->
     <style>
         body {
             margin: 0;
             padding: 0;
             background: #000000;
-            font-family: "Roboto", sans-serif;
+            font-family: Arial, sans-serif;
             color: white;
         }
 
@@ -24,7 +23,6 @@
             background: #1d1d1d;
         }
 
-        /* Contenedor para que el gráfico y el panel estén lado a lado */
         .main-content {
             display: flex;
             width: 100%;
@@ -32,10 +30,9 @@
         }
 
         #grafico-fichajes {
-            flex: 3; /* El gráfico toma más espacio */
+            flex: 3;
         }
 
-        /* Panel lateral estilizado */
         #panel-info {
             flex: 1;
             background: #0a0a0a;
@@ -45,7 +42,7 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            opacity: 0; /* Invisible hasta que hagamos hover */
+            opacity: 0;
             transition: opacity 0.3s ease;
         }
 
@@ -59,11 +56,27 @@
             margin-bottom: 15px;
         }
 
+        #btn-sonido {
+            margin-top: 10px;
+            padding: 8px 14px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background: #111;
+            color: white;
+            cursor: pointer;
+            font-family: Arial, sans-serif;
+        }
+
+        #btn-sonido:hover {
+            background: #222;
+        }
+
         .texto-info { text-align: center; }
+        .fecha { font-size: 0.9em; color: #999; margin-bottom: 8px; }
         .nombre { font-size: 1.5em; font-weight: bold; margin-bottom: 5px; }
         .clubes { color: #aaa; font-style: italic; margin-bottom: 15px; }
         .precio { font-size: 1.8em; color: #ff4d4d; font-weight: 900; }
-        .precio-original { font-size: 1.2em; color: #3b82f6; /* Azul para el costo original */margin-top: 10px; }
+        .precio-original { font-size: 1.2em; color: #3b82f6; margin-top: 10px; }
         .label-precio { font-size: 0.6em; color: #666; display: block; text-transform: uppercase; }
         .contexto { font-size: 0.85em; color: #cccccc; margin-top: 20px; line-height: 1.4; border-top: 1px solid #333; padding-top: 15px; text-align: justify; }
     </style>
@@ -73,6 +86,7 @@
     <div class="header">
         <h1>Inflación del Mercado de Fichajes</h1>
         <div>La historia del récord de fichaje más caro en el fútbol (1956 - 2017), medido en millones de euros, con su ajuste a la inflación.</div>
+        <button id="btn-sonido">🔇 Activar sonido</button>
     </div>
 
     <div class="main-content">
@@ -81,6 +95,7 @@
         <div id="panel-info">
             <div id="foto-jugador"></div>
             <div class="texto-info">
+                <div id="info-fecha" class="fecha"></div>
                 <div id="info-nombre" class="nombre"></div>
                 <div id="info-clubes" class="clubes"></div>
                 <div id="info-precio-original" class="precio-original"></div>
@@ -94,115 +109,306 @@
         async function grafico_fichajes() {
             const llamado_datos = await fetch('./datos-fichajes.json');
             const datos_json = await llamado_datos.json();
-            
-            // Invertimos el array completo una vez para que los índices coincidan siempre
-            const datos = datos_json.reverse();
 
-            const lista_fechas = datos.map(tupla => (tupla['fecha_fichaje'].split("/"))[2]);
-            lista_fechas[10] = '1997 (A)';
-            lista_fechas[11] = '1997 (R)';
-            lista_fechas[14] = '2000 (C)';
-            lista_fechas[15] = '2000 (F)';
+            const datos = datos_json
+                .map(dato => {
+                    const fecha = prepararFecha(dato.fecha_fichaje);
 
-            const lista_records = datos.map(tupla => parseFloat(tupla['coste']));
-            const lista_inflados = datos.map(tupla => parseFloat(tupla['precio_ajustado']));
-            const lista_nombres = datos.map(tupla => tupla['jugador']);
+                    return {
+                        ...dato,
+                        anio: fecha.anio,
+                        fecha_texto: fecha.fecha_texto,
+                        orden_fecha: fecha.orden_fecha
+                    };
+                })
+                .sort((a, b) => a.orden_fecha - b.orden_fecha);
 
-            const lista_etiquetas = [];
-            for (let i = 0; i < 21; i++) {
-                lista_etiquetas.push({
-                    x: i,
-                    y: lista_inflados[i] + 40,
-                    textangle: -90,
-                    xref: 'x',
-                    yref: 'y',
-                    text: lista_nombres[i],
-                    showarrow: false,
-                    font: { family: 'Roboto', color: 'white' },
-                    bgcolor: 'rgba(0,0,0,0.5)'
-                });
-            };
+            agregarPosicionX(datos);
 
-            
-            lista_etiquetas[1]['y'] = 100;
-            lista_etiquetas[3]['y'] = 60;
-            lista_etiquetas[5]['y'] = 70;
-            lista_etiquetas[12]['y'] = 100;
+            const lista_fechas = datos.map(dato => dato.x_grafico);
+            const lista_records = datos.map(dato => parseFloat(dato.coste));
+            const lista_inflados = datos.map(dato => parseFloat(dato.precio_ajustado));
+
+            let sonidoActivo = false;
+            let sintetizador = null;
+            let ultimoPuntoSonido = null;
+            let ultimoTiempoSonido = 0;
+
+            const btnSonido = document.getElementById('btn-sonido');
+
+            <!-- config del boton del sonido -->
+            btnSonido.addEventListener('click', async function () {
+                await Tone.start();
+
+                if (sintetizador === null) {
+                    sintetizador = new Tone.Synth({
+                        oscillator: {
+                            type: 'sine'
+                        },
+                        envelope: {
+                            attack: 0.01,
+                            decay: 0.08,
+                            sustain: 0.15,
+                            release: 0.18
+                        }
+                    }).toDestination();
+
+                    sintetizador.volume.value = -12;
+                }
+
+                sonidoActivo = !sonidoActivo;
+                btnSonido.innerText = sonidoActivo ? '🔊 Sonido activado' : '🔇 Activar sonido';
+            });
 
             const datos_records = {
                 x: lista_fechas,
                 y: lista_records,
-                mode: "lines+markers",
+                mode: 'lines+markers',
+                line: { color: 'blue', width: 2, shape: 'linear' },
                 marker: { color: 'blue', size: 10 },
                 name: 'Costo Original',
-                hoverinfo: 'none' // Desactivamos el tooltip por defecto de Plotly
+                hoverinfo: 'skip'
             };
 
             const datos_inflados = {
                 x: lista_fechas,
                 y: lista_inflados,
-                mode: "lines+markers",
-                marker: { color: 'red', symbol: 'diamond', size: 10 },
+                mode: 'lines+markers',
+                line: { color: 'red', width: 2, shape: 'linear' },
+                marker: {
+                    color: 'red',
+                    symbol: 'diamond',
+                    size: datos.map(() => 10),
+                    line: {
+                        color: datos.map(() => 'red'),
+                        width: datos.map(() => 0)
+                    }
+                },
                 name: 'Costo Ajustado (Abril 2026)',
                 hoverinfo: 'none'
             };
 
             const forma = {
-                yaxis: { title: 'Millones de Euros (€)', gridcolor: '#333', color: 'lightgray' },
-                xaxis: { type: 'category', color: 'lightgray', showgrid: false },
+                yaxis: {
+                    title: 'Millones de Euros (€)',
+                    color: 'lightgray',
+                    showgrid: false,
+                    zeroline: false
+                },
+                xaxis: {
+                    title: 'Año del fichaje',
+                    tickvals: [1960, 1970, 1980, 1990, 2000, 2010, 2020],
+                    ticktext: ['1960', '1970', '1980', '1990', '2000', '2010', '2020'],
+                    color: 'lightgray',
+                    showgrid: false,
+                    zeroline: false
+                },
                 plot_bgcolor: 'black',
                 paper_bgcolor: 'black',
-                annotations: lista_etiquetas,
                 margin: { l: 60, r: 10, b: 40, t: 30 },
                 legend: { orientation: 'h', font: { color: 'white' }, y: -0.2 }
             };
 
             const graficoDiv = document.getElementById('grafico-fichajes');
 
-            // IMPORTANTE: Quitamos staticPlot: true para habilitar el hover
             Plotly.newPlot(graficoDiv, [datos_records, datos_inflados], forma, { displayModeBar: false });
 
-            // --- Lógica de Interacción ---
-            graficoDiv.on('plotly_hover', function(data) {
-                const punto = data.points[0].pointIndex;
-                const j = datos[punto];
-                const nombreLimpio = j.jugador.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                
-                document.getElementById('panel-info').style.opacity = 1;
-                document.getElementById('info-nombre').innerText = j.jugador;
-                document.getElementById('info-clubes').innerText = `${j.ultimo_club} ➜ ${j.nuevo_club}`;
-                
-                // Mostramos ambos precios
-                document.getElementById('info-precio-original').innerHTML = `<span class="label-precio">Costo Original</span> ${j.coste} M€`;
-                document.getElementById('info-precio').innerHTML = `<span class="label-precio">Ajustado a Hoy</span> ${j.precio_ajustado} M€`;
-                document.getElementById('info-contexto').innerText = j.contexto || "";
-            
-                // Lógica de fotos con excepciones manuales
-                let archivoFoto = "";
-                
-                if (nombreLimpio.includes("conti")) {
-                    archivoFoto = "conti.jpg";
-                } else if (nombreLimpio.includes("nazario")) {
-                    archivoFoto = "ronaldo.webp";
-                } else if (nombreLimpio.includes("cristiano")) {
-                    archivoFoto = "cristiano.webp";
-                } else if (nombreLimpio.includes("denilson")) {
-                    archivoFoto = "denilson.webp";
-                } else if (nombreLimpio.includes("neymar")) {
-                    archivoFoto = "neymar.webp";
-                } else {
-                    const apellido = nombreLimpio.split(" ").pop();
-                    archivoFoto = `${apellido}.webp`;
+            graficoDiv.on('plotly_hover', function (evento) {
+                const punto = evento.points[0].pointIndex;
+                const jugador = datos[punto];
+
+                iluminarPunto(graficoDiv, datos, punto);
+                actualizarPanel(jugador);
+
+                const ahora = Date.now();
+
+                if (sonidoActivo && evento.points[0].curveNumber === 1 && punto !== ultimoPuntoSonido && ahora - ultimoTiempoSonido > 350) {
+                    reproducirSonidoFichaje(
+                        parseFloat(jugador.coste),
+                        parseFloat(jugador.precio_ajustado),
+                        lista_records,
+                        lista_inflados,
+                        sintetizador
+                    );
+
+                    ultimoPuntoSonido = punto;
+                    ultimoTiempoSonido = ahora;
                 }
-            
-                document.getElementById('foto-jugador').style.backgroundImage = `url('img/${archivoFoto}')`;
             });
-            
-            graficoDiv.on('plotly_unhover', function() {
-                document.getElementById('panel-info').style.opacity = 0;
+
+            graficoDiv.on('plotly_unhover', function () {
+                quitarIluminacion(graficoDiv, datos);
             });
+        }
+
+        function prepararFecha(texto) {
+            texto = String(texto).trim();
+
+            if (texto.includes('/')) {
+                const partes = texto.split('/');
+                const dia = parseInt(partes[0]);
+                const mes = parseInt(partes[1]);
+                const anio = parseInt(partes[2]);
+                return crearFecha(dia, mes, anio);
+            }
+
+            if (texto.includes('-')) {
+                const partes = texto.split('-');
+                const anio = parseInt(partes[0]);
+                const mes = parseInt(partes[1]);
+                const dia = parseInt(partes[2]);
+                return crearFecha(dia, mes, anio);
+            }
+
+            const anio = parseInt(texto);
+            return crearFecha(1, 1, anio);
+        }
+
+        function crearFecha(dia, mes, anio) {
+            const diaTexto = String(dia).padStart(2, '0');
+            const mesTexto = String(mes).padStart(2, '0');
+            const fechaTexto = `${diaTexto}/${mesTexto}/${anio}`;
+            const ordenFecha = anio * 10000 + mes * 100 + dia;
+
+            return {
+                anio: anio,
+                fecha_texto: fechaTexto,
+                orden_fecha: ordenFecha
+            };
+        }
+
+        function agregarPosicionX(datos) {
+            const grupos = {};
+
+            for (let i = 0; i < datos.length; i++) {
+                const anio = datos[i].anio;
+
+                if (!grupos[anio]) {
+                    grupos[anio] = [];
+                }
+
+                grupos[anio].push(datos[i]);
+            }
+
+            for (const anio in grupos) {
+                const grupo = grupos[anio];
+                const cantidad = grupo.length;
+
+                if (cantidad === 1) {
+                    grupo[0].x_grafico = parseInt(anio);
+                } else {
+                    for (let i = 0; i < cantidad; i++) {
+                        grupo[i].x_grafico = parseInt(anio) + 0.10 + (i * 0.80 / (cantidad - 1));
+                    }
+                }
+            }
+        }
+
+        function actualizarPanel(jugador) {
+            const nombreLimpio = jugador.jugador.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+
+            document.getElementById('panel-info').style.opacity = 1;
+            document.getElementById('info-fecha').innerText = `Fecha del traspaso: ${jugador.fecha_texto}`;
+            document.getElementById('info-nombre').innerText = jugador.jugador;
+            document.getElementById('info-clubes').innerText = `${jugador.ultimo_club} ➜ ${jugador.nuevo_club}`;
+            document.getElementById('info-precio-original').innerHTML = `<span class="label-precio">Costo Original</span> ${jugador.coste} M€`;
+            document.getElementById('info-precio').innerHTML = `<span class="label-precio">Ajustado a Hoy</span> ${jugador.precio_ajustado} M€`;
+            document.getElementById('info-contexto').innerText = jugador.contexto || '';
+
+            let archivoFoto = '';
+
+            <!-- con estos tuve problems asi q los deje harcodeados no mas -->
+            if (nombreLimpio.includes('conti')) {
+                archivoFoto = 'conti.jpg';
+            } else if (nombreLimpio.includes('nazario')) {
+                archivoFoto = 'ronaldo.webp';
+            } else if (nombreLimpio.includes('figo')) {
+                archivoFoto = 'figo.webp';
+            } else if (nombreLimpio.includes('cristiano')) {
+                archivoFoto = 'cristiano.webp';
+            } else if (nombreLimpio.includes('denilson')) {
+                archivoFoto = 'denilson.webp';
+            } else if (nombreLimpio.includes('neymar')) {
+                archivoFoto = 'neymar.webp';
+            } else {
+                const apellido = nombreLimpio.split(' ').pop();
+                archivoFoto = `${apellido}.webp`;
+            }
+
+            document.getElementById('foto-jugador').style.backgroundImage = `url('img/${archivoFoto}')`;
+        }
+
+        function iluminarPunto(graficoDiv, datos, indice) {
+            const tamanos = [];
+            const anchosBorde = [];
+            const coloresBorde = [];
+
+            for (let i = 0; i < datos.length; i++) {
+                if (i === indice) {
+                    tamanos.push(18);
+                    anchosBorde.push(4);
+                    coloresBorde.push('white');
+                } else {
+                    tamanos.push(10);
+                    anchosBorde.push(0);
+                    coloresBorde.push('red');
+                }
+            }
+
+            Plotly.restyle(graficoDiv, {
+                'marker.size': [tamanos],
+                'marker.line.width': [anchosBorde],
+                'marker.line.color': [coloresBorde]
+            }, [1]);
+        }
+
+        function quitarIluminacion(graficoDiv, datos) {
+            const tamanos = datos.map(() => 10);
+            const anchosBorde = datos.map(() => 0);
+            const coloresBorde = datos.map(() => 'red');
+
+            Plotly.restyle(graficoDiv, {
+                'marker.size': [tamanos],
+                'marker.line.width': [anchosBorde],
+                'marker.line.color': [coloresBorde]
+            }, [1]);
+        }
+
+        function reproducirSonidoFichaje(costoOriginal, costoAjustado, lista_records, lista_inflados, sintetizador) {
+            if (!sintetizador) return;
+
+            const minimo = Math.min(...lista_records, ...lista_inflados);
+            const maximo = Math.max(...lista_records, ...lista_inflados);
+
+            <!-- puse las notas manual pq fue horrible empezar a probar con distintos numeros de hz -->
+            const escala = [
+                'C3', 'D3', 'E3', 'G3', 'A3',
+                'C4', 'D4', 'E4', 'G4', 'A4',
+                'C5', 'D5', 'E5', 'G5', 'A5',
+                'C6', 'D6', 'E6'
+            ];
+
+            let indiceOriginal = Math.round(escalar(costoOriginal, minimo, maximo, 0, escala.length - 7));
+            let indiceAjustado = Math.round(escalar(costoAjustado, minimo, maximo, 5, escala.length - 1));
+
+            if (indiceAjustado <= indiceOriginal) {
+                indiceAjustado = Math.min(indiceOriginal + 3, escala.length - 1);
+            }
+
+            const notaOriginal = escala[indiceOriginal];
+            const notaAjustada = escala[indiceAjustado];
+            const ahora = Tone.now();
+
+            sintetizador.triggerAttackRelease(notaOriginal, '16n', ahora);
+            sintetizador.triggerAttackRelease(notaAjustada, '8n', ahora + 0.18);
+        }
+
+        <!-- para poder mantener consistencia entre las notas. hice la func solo x si en un futuro ponemos mas datos -->
+        function escalar(valor, minEntrada, maxEntrada, minSalida, maxSalida) {
+            return minSalida + ((valor - minEntrada) / (maxEntrada - minEntrada)) * (maxSalida - minSalida);
         }
         grafico_fichajes();
     </script>
 </body>
+
 </html>
